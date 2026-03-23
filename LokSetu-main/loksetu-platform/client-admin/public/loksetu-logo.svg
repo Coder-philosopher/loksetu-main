@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="triGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF9933"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#138808"/>
+    </linearGradient>
+    <linearGradient id="bridgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF9933"/>
+      <stop offset="50%" stop-color="#000080"/>
+      <stop offset="100%" stop-color="#138808"/>
+    </linearGradient>
+    <linearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#138808"/>
+      <stop offset="100%" stop-color="#0A6A06"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer circle -->
+  <circle cx="100" cy="100" r="96" fill="#0A3D62"/>
+  
+  <!-- Tricolor ring -->
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#triGrad)" stroke-width="5"/>
+  
+  <!-- White inner circle -->
+  <circle cx="100" cy="100" r="82" fill="#FFFFFF"/>
+
+  <!-- Ashoka Chakra - outer ring -->
+  <circle cx="100" cy="56" r="18" fill="none" stroke="#000080" stroke-width="1.5"/>
+  <!-- Chakra hub -->
+  <circle cx="100" cy="56" r="3" fill="#000080"/>
+  <!-- Chakra 24 spokes (simplified to 12 for clarity) -->
+  <g stroke="#000080" stroke-width="0.8" opacity="0.9">
+    <line x1="100" y1="39" x2="100" y2="73"/>
+    <line x1="83" y1="56" x2="117" y2="56"/>
+    <line x1="88" y1="44" x2="112" y2="68"/>
+    <line x1="112" y1="44" x2="88" y2="68"/>
+    <line x1="85" y1="48" x2="115" y2="64"/>
+    <line x1="115" y1="48" x2="85" y2="64"/>
+    <line x1="91" y1="40" x2="109" y2="72"/>
+    <line x1="109" y1="40" x2="91" y2="72"/>
+    <line x1="100" y1="38" x2="100" y2="74"/>
+    <line x1="87" y1="42" x2="113" y2="70"/>
+    <line x1="113" y1="42" x2="87" y2="70"/>
+    <line x1="82" y1="52" x2="118" y2="60"/>
+  </g>
+
+  <!-- Bridge arches -->
+  <g fill="none" stroke-width="3" stroke-linecap="round">
+    <!-- Left arch - saffron -->
+    <path d="M 38 120 Q 58 90 78 120" stroke="#FF9933"/>
+    <!-- Center arch - navy -->
+    <path d="M 70 120 Q 100 82 130 120" stroke="#000080" stroke-width="3.5"/>
+    <!-- Right arch - green -->
+    <path d="M 122 120 Q 142 90 162 120" stroke="#138808"/>
+  </g>
+  
+  <!-- Bridge base -->
+  <rect x="32" y="118" width="136" height="4" rx="2" fill="#0A3D62" opacity="0.8"/>
+  
+  <!-- Bridge pillars -->
+  <rect x="38" y="112" width="4" height="10" rx="1" fill="#0A3D62" opacity="0.6"/>
+  <rect x="78" y="112" width="4" height="10" rx="1" fill="#0A3D62" opacity="0.6"/>
+  <rect x="118" y="112" width="4" height="10" rx="1" fill="#0A3D62" opacity="0.6"/>
+  <rect x="158" y="112" width="4" height="10" rx="1" fill="#0A3D62" opacity="0.6"/>
+
+  <!-- Checkmark in circle -->
+  <circle cx="100" cy="100" r="12" fill="url(#checkGrad)" opacity="0.15"/>
+  <path d="M 90 100 L 97 108 L 112 92" fill="none" stroke="url(#checkGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- LokSetu text -->
+  <text x="100" y="148" text-anchor="middle" font-family="Arial, sans-serif" font-weight="800" font-size="18" fill="#0A3D62" letter-spacing="1">LokSetu</text>
+  
+  <!-- Subtitle -->
+  <text x="100" y="162" text-anchor="middle" font-family="Arial, sans-serif" font-weight="500" font-size="7" fill="#64748b" letter-spacing="2" text-transform="uppercase">DIGITAL ELECTION PLATFORM</text>
+</svg>

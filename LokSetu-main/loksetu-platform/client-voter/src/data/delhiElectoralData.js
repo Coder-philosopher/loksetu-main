@@ -1,0 +1,100 @@
+const DELHI_LOK_SABHA = [
+  'Chandni Chowk',
+  'North East Delhi',
+  'East Delhi',
+  'New Delhi',
+  'North West Delhi',
+  'West Delhi',
+  'South Delhi',
+];
+
+const DELHI_VIDHAN_SABHA = [
+  { name: 'Narela', lok_sabha: 'North West Delhi' },
+  { name: 'Burari', lok_sabha: 'North East Delhi' },
+  { name: 'Timarpur', lok_sabha: 'Chandni Chowk' },
+  { name: 'Adarsh Nagar', lok_sabha: 'Chandni Chowk' },
+  { name: 'Badli', lok_sabha: 'North West Delhi' },
+  { name: 'Rithala', lok_sabha: 'North West Delhi' },
+  { name: 'Bawana', lok_sabha: 'North West Delhi' },
+  { name: 'Mundka', lok_sabha: 'West Delhi' },
+  { name: 'Kirari', lok_sabha: 'North West Delhi' },
+  { name: 'Sultanpur Majra', lok_sabha: 'North West Delhi' },
+  { name: 'Nangloi Jat', lok_sabha: 'West Delhi' },
+  { name: 'Mangol Puri', lok_sabha: 'North West Delhi' },
+  { name: 'Rohini', lok_sabha: 'North West Delhi' },
+  { name: 'Shalimar Bagh', lok_sabha: 'Chandni Chowk' },
+  { name: 'Shakur Basti', lok_sabha: 'Chandni Chowk' },
+  { name: 'Tri Nagar', lok_sabha: 'Chandni Chowk' },
+  { name: 'Wazirpur', lok_sabha: 'Chandni Chowk' },
+  { name: 'Model Town', lok_sabha: 'Chandni Chowk' },
+  { name: 'Sadar Bazar', lok_sabha: 'Chandni Chowk' },
+  { name: 'Chandni Chowk', lok_sabha: 'Chandni Chowk' },
+  { name: 'Matia Mahal', lok_sabha: 'Chandni Chowk' },
+  { name: 'Ballimaran', lok_sabha: 'Chandni Chowk' },
+  { name: 'Karol Bagh', lok_sabha: 'Chandni Chowk' },
+  { name: 'Patel Nagar', lok_sabha: 'New Delhi' },
+  { name: 'Moti Nagar', lok_sabha: 'West Delhi' },
+  { name: 'Madipur', lok_sabha: 'West Delhi' },
+  { name: 'Rajouri Garden', lok_sabha: 'West Delhi' },
+  { name: 'Hari Nagar', lok_sabha: 'West Delhi' },
+  { name: 'Tilak Nagar', lok_sabha: 'West Delhi' },
+  { name: 'Janakpuri', lok_sabha: 'West Delhi' },
+  { name: 'Vikaspuri', lok_sabha: 'West Delhi' },
+  { name: 'Uttam Nagar', lok_sabha: 'West Delhi' },
+  { name: 'Dwarka', lok_sabha: 'West Delhi' },
+  { name: 'Matiala', lok_sabha: 'West Delhi' },
+  { name: 'Najafgarh', lok_sabha: 'South Delhi' },
+  { name: 'Bijwasan', lok_sabha: 'South Delhi' },
+  { name: 'Palam', lok_sabha: 'West Delhi' },
+  { name: 'Delhi Cantt', lok_sabha: 'New Delhi' },
+  { name: 'Rajinder Nagar', lok_sabha: 'New Delhi' },
+  { name: 'New Delhi', lok_sabha: 'New Delhi' },
+  { name: 'Jangpura', lok_sabha: 'New Delhi' },
+  { name: 'Kasturba Nagar', lok_sabha: 'New Delhi' },
+  { name: 'Malviya Nagar', lok_sabha: 'South Delhi' },
+  { name: 'R K Puram', lok_sabha: 'New Delhi' },
+  { name: 'Mehrauli', lok_sabha: 'South Delhi' },
+  { name: 'Chhatarpur', lok_sabha: 'South Delhi' },
+  { name: 'Deoli', lok_sabha: 'South Delhi' },
+  { name: 'Ambedkar Nagar', lok_sabha: 'South Delhi' },
+  { name: 'Sangam Vihar', lok_sabha: 'South Delhi' },
+  { name: 'Greater Kailash', lok_sabha: 'New Delhi' },
+  { name: 'Kalkaji', lok_sabha: 'South Delhi' },
+  { name: 'Tughlakabad', lok_sabha: 'South Delhi' },
+  { name: 'Badarpur', lok_sabha: 'South Delhi' },
+  { name: 'Okhla', lok_sabha: 'South Delhi' },
+  { name: 'Trilokpuri', lok_sabha: 'East Delhi' },
+  { name: 'Kondli', lok_sabha: 'East Delhi' },
+  { name: 'Patparganj', lok_sabha: 'East Delhi' },
+  { name: 'Laxmi Nagar', lok_sabha: 'East Delhi' },
+  { name: 'Vishwas Nagar', lok_sabha: 'East Delhi' },
+  { name: 'Krishna Nagar', lok_sabha: 'East Delhi' },
+  { name: 'Gandhi Nagar', lok_sabha: 'East Delhi' },
+  { name: 'Shahdara', lok_sabha: 'East Delhi' },
+  { name: 'Seemapuri', lok_sabha: 'North East Delhi' },
+  { name: 'Rohtas Nagar', lok_sabha: 'North East Delhi' },
+  { name: 'Seelampur', lok_sabha: 'North East Delhi' },
+  { name: 'Ghonda', lok_sabha: 'North East Delhi' },
+  { name: 'Babarpur', lok_sabha: 'North East Delhi' },
+  { name: 'Gokalpur', lok_sabha: 'North East Delhi' },
+  { name: 'Mustafabad', lok_sabha: 'North East Delhi' },
+  { name: 'Karawal Nagar', lok_sabha: 'North East Delhi' },
+];
+
+const MCD_WARDS = Array.from({ length: 250 }, (_v, i) => `Ward ${String(i + 1).padStart(3, '0')}`);
+
+let cursor = 0;
+const vidhanSabhaWithWards = DELHI_VIDHAN_SABHA.map((item, idx) => {
+  const wardCount = idx < 40 ? 4 : 3;
+  const wards = MCD_WARDS.slice(cursor, cursor + wardCount);
+  cursor += wardCount;
+  return {
+    ...item,
+    mcd_wards: wards,
+  };
+});
+
+export const DELHI_ELECTORAL_DATA = {
+  lok_sabha: DELHI_LOK_SABHA,
+  vidhan_sabha: vidhanSabhaWithWards,
+};

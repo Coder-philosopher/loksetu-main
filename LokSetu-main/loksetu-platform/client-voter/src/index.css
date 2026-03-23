@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gov-blue: #1a237e;
+  --gov-saffron: #ff6f00;
+  --gov-green: #138808;
+}
+
+@layer base {
+  body {
+    @apply antialiased font-gov;
+  }
+}
+
+@layer components {
+  .gov-card {
+    @apply bg-white border border-gov-border rounded-md shadow-sm;
+  }
+  .gov-card-hover {
+    @apply gov-card hover:shadow-md hover:border-gov-blue/30 transition-all duration-200;
+  }
+  .gov-btn-primary {
+    @apply bg-gov-blue text-white font-bold rounded px-5 py-2.5 hover:bg-gov-blue-light transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .gov-btn-secondary {
+    @apply bg-white text-gov-text font-bold rounded px-5 py-2.5 border border-gov-border hover:bg-gray-50 transition-colors flex items-center gap-2;
+  }
+  .gov-btn-danger {
+    @apply bg-red-600 text-white font-bold rounded px-5 py-2.5 hover:bg-red-700 transition-colors flex items-center gap-2;
+  }
+  .gov-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded;
+  }
+  .gov-badge-green {
+    @apply gov-badge bg-gov-green-light text-gov-green border border-green-200;
+  }
+  .gov-badge-blue {
+    @apply gov-badge bg-blue-50 text-gov-blue border border-blue-200;
+  }
+}

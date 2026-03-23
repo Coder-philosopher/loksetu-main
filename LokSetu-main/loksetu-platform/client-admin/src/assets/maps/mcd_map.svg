@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 200" role="img" aria-label="MCD ward map">
+  <rect x="0" y="0" width="230" height="200" fill="#F8FAFC" stroke="#E2E8F0" />
+  <path d="M14 34 L78 14 L152 22 L214 60 L208 136 L164 184 L84 188 L22 150 L10 92 Z" fill="#F1F5F9" stroke="#94A3B8" stroke-width="2" />
+  <path data-region="0" d="M28 44 L58 32 L84 40 L78 64 L46 70 L28 56 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+  <path data-region="1" d="M90 36 L124 34 L148 50 L140 74 L102 70 L84 54 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+  <path data-region="2" d="M152 56 L188 62 L186 88 L156 100 L140 76 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+  <path data-region="3" d="M32 76 L68 74 L88 90 L80 116 L46 120 L28 96 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+  <path data-region="4" d="M92 78 L134 80 L150 98 L138 124 L96 122 L82 98 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+  <path data-region="5" d="M156 104 L188 108 L188 132 L162 148 L140 124 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+  <path data-region="6" d="M52 130 L88 130 L104 150 L90 172 L56 170 L38 150 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+  <path data-region="7" d="M112 132 L148 134 L166 154 L152 178 L118 176 L98 152 Z" fill="#CBD5F5" stroke="#94A3B8" stroke-width="1.2" />
+</svg>

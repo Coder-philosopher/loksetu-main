@@ -1,0 +1,61 @@
+{
+  "name": "LokSetu",
+  "version": "1.0.0",
+  "description": "Project for IEEE hackathon Jan 2026 Secure Authentication & Transparent Yield Architecture (LokSetu) LokSetu: One Identity, Zero Friction, Total Mobility.",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm install && cd LokSetu-platform/server-core && npm install && cd ../client-admin && npm install && cd ../client-voter && npm install",
+    "start-all": "npm run start-docker && concurrently -k -n BACKEND,GATEWAY,CONSUMER,ADMIN,VOTER -c blue,magenta,cyan,green,yellow \"npm run start-backend\" \"npm run start-gateway\" \"npm run start-consumer\" \"npm run start-admin\" \"npm run start-voter\"",
+    "start-all-full": "npm run start-docker && concurrently -k -n BACKEND,GATEWAY,CONSUMER,ADMIN,VOTER -c blue,magenta,cyan,green,yellow \"npm run start-backend\" \"npm run start-gateway\" \"npm run start-consumer\" \"npm run start-admin\" \"npm run start-voter\"",
+    "start-backend": "cd LokSetu-platform/server-core && npx ts-node src/index.ts",
+    "start-gateway": "cd LokSetu-platform/server-core && node gateway-local.js",
+    "start-consumer": "cd LokSetu-platform/server-core && node kafka/consumer-local.js",
+    "start-admin": "cd LokSetu-platform/client-admin && npx vite --port 5173",
+    "start-voter": "cd LokSetu-platform/client-voter && npx vite --port 5174",
+    "start-docker": "docker compose up -d && echo Docker services started",
+    "stop-docker": "docker compose down",
+    "seed-db": "cd LokSetu-platform/server-core && npx ts-node src/scripts/seed.ts",
+    "start-kafka": "docker compose -f kafka.yaml up -d && echo Kafka started",
+    "stop-kafka": "docker compose -f kafka.yaml down",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coder-philosopher/LokSetu.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Coder-philosopher/LokSetu/issues"
+  },
+  "homepage": "https://github.com/Coder-philosopher/LokSetu#readme",
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "kafkajs": "^2.2.4",
+    "knex": "^3.1.0",
+    "lucide-react": "^0.562.0",
+    "morgan": "^1.10.1",
+    "pg": "^8.16.3",
+    "recharts": "^3.6.0",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.0.3",
+    "@types/pg": "^8.16.0",
+    "concurrently": "^9.1.2",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

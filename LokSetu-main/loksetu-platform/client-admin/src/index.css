@@ -1,0 +1,464 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #ffffff;
+    --card: #f8fafc;
+    --card-2: #f1f5f9;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --accent: #5b4db1;
+  }
+
+  .dark {
+    --bg: #020617;
+    --card: #0f172a;
+    --card-2: #111827;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #1e293b;
+    --accent: #6366f1;
+  }
+
+  body {
+    @apply antialiased;
+    font-feature-settings: "cv11", "ss01";
+    background: var(--bg);
+    color: var(--text);
+  }
+  /* Smooth scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+}
+
+@layer components {
+  .surface {
+    background: var(--card);
+  }
+
+  .surface-alt {
+    background: var(--bg);
+  }
+
+  /* === Cards === */
+  .dash-card {
+    @apply border rounded-lg shadow-sm;
+    border-color: var(--border);
+    background: var(--card);
+  }
+  .dash-card-hover {
+    @apply dash-card hover:shadow-md hover:border-dash-accent/30 transition-all duration-200;
+  }
+  .dash-card-accent {
+    @apply dash-card border-l-4 border-l-dash-accent;
+  }
+
+  /* Stat panel */
+  .stat-card {
+    @apply dash-card p-5 hover:shadow-md transition-all duration-200;
+  }
+
+  /* === Navigation === */
+  .nav-link {
+    @apply flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-all duration-200;
+  }
+
+  /* === Typography === */
+  .section-title {
+    @apply text-lg font-bold text-dash-text border-l-4 border-dash-accent pl-3;
+  }
+  .section-subtitle {
+    @apply text-sm font-semibold text-dash-text-secondary;
+  }
+
+  /* === Badges === */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md;
+  }
+  .badge-blue { @apply badge bg-blue-50 text-blue-700; }
+  .badge-green { @apply badge bg-emerald-50 text-emerald-700; }
+  .badge-red { @apply badge bg-red-50 text-red-700; }
+  .badge-amber { @apply badge bg-amber-50 text-amber-700; }
+  .badge-purple { @apply badge bg-purple-50 text-purple-700; }
+  .badge-outline { @apply badge bg-transparent border border-dash-border text-dash-text-secondary; }
+
+  /* === Form elements === */
+  .dash-input {
+    @apply w-full px-4 py-3 border border-dash-border rounded-lg text-dash-text font-medium focus:ring-2 focus:ring-dash-accent/20 focus:border-dash-accent outline-none transition-all placeholder-dash-muted;
+    background: var(--card);
+    border-color: var(--border);
+  }
+  .dash-label {
+    @apply text-sm font-semibold text-dash-text-secondary mb-1.5 block;
+  }
+  .dash-select {
+    @apply dash-input appearance-none cursor-pointer bg-no-repeat bg-right pr-10;
+  }
+
+  /* === Buttons === */
+  .btn-primary {
+    @apply px-6 py-3 bg-dash-primary text-white font-semibold rounded-lg hover:bg-dash-primary-light transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply px-6 py-3 text-dash-primary font-semibold rounded-lg border border-dash-border hover:bg-slate-50 transition-colors duration-200 flex items-center justify-center gap-2;
+    background: var(--card);
+    border-color: var(--border);
+  }
+  .btn-success {
+    @apply px-6 py-3 bg-dash-success text-white font-semibold rounded-lg hover:bg-green-700 transition-colors duration-200 flex items-center justify-center gap-2;
+  }
+  .btn-warning {
+    @apply px-6 py-3 bg-dash-warning text-white font-semibold rounded-lg hover:bg-amber-600 transition-colors duration-200 flex items-center justify-center gap-2;
+  }
+  .btn-danger {
+    @apply px-6 py-3 bg-dash-danger text-white font-semibold rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center justify-center gap-2;
+  }
+  .btn-ghost {
+    @apply px-4 py-2 text-dash-text-secondary font-medium rounded-lg hover:bg-slate-100 transition-colors duration-200 flex items-center justify-center gap-2;
+  }
+
+  /* === Table === */
+  .dash-table {
+    @apply w-full text-sm;
+  }
+  .dash-table thead tr {
+    @apply bg-slate-50 border-b border-dash-border;
+  }
+  .dash-table th {
+    @apply text-left px-5 py-3 text-xs font-bold text-dash-text-secondary uppercase tracking-wider;
+  }
+  .dash-table tbody {
+    @apply divide-y divide-dash-border;
+  }
+  .dash-table tbody tr {
+    @apply hover:bg-slate-50 transition-colors;
+  }
+  .dash-table td {
+    @apply px-5 py-3;
+  }
+
+  /* === Status Indicators === */
+  .status-dot {
+    @apply w-2.5 h-2.5 rounded-full inline-block;
+  }
+  .status-online { @apply status-dot bg-dash-success animate-pulse; }
+  .status-offline { @apply status-dot bg-dash-danger; }
+  .status-warning { @apply status-dot bg-dash-warning animate-pulse; }
+
+  /* === Progress Bar === */
+  .progress-bar {
+    @apply h-2 bg-slate-100 rounded-full overflow-hidden;
+  }
+  .progress-bar-fill {
+    @apply h-full rounded-full transition-all duration-500;
+  }
+
+  /* === Government Style Enhancements === */
+  .gov-section-header {
+    @apply text-lg font-bold text-dash-primary border-l-4 border-dash-saffron pl-3 py-1;
+  }
+  .gov-card {
+    @apply border border-dash-border rounded-lg shadow-sm hover:shadow-md transition-all duration-300;
+    background: var(--card);
+    border-color: var(--border);
+    border-top: 3px solid #FF9933;
+  }
+  .gov-stat-card {
+    @apply gov-card p-5;
+  }
+}
+
+/* === High Contrast Mode === */
+html.high-contrast {
+  --dash-text: #000000;
+  --dash-text-secondary: #1a1a1a;
+  --dash-border: #333333;
+  --dash-surface: #ffffff;
+}
+html.high-contrast .dash-card,
+html.high-contrast .gov-card {
+  border-width: 2px;
+  border-color: #333;
+}
+html.high-contrast .text-dash-text-secondary {
+  color: #1a1a1a !important;
+}
+html.high-contrast .text-slate-400,
+html.high-contrast .text-slate-500 {
+  color: #555 !important;
+}
+html.high-contrast nav a,
+html.high-contrast button {
+  outline-offset: 2px;
+}
+html.high-contrast nav a:focus-visible,
+html.high-contrast button:focus-visible {
+  outline: 3px solid #FF9933;
+}
+
+/* === Dark Mode === */
+html.dark {
+  color-scheme: dark;
+}
+
+.bg-white {
+  background-color: var(--card) !important;
+}
+
+.bg-slate-50,
+.bg-gray-50,
+.bg-gray-100 {
+  background-color: var(--card-2) !important;
+}
+
+.border-slate-200,
+.border-slate-300,
+.border-dash-border,
+.divide-dash-border > :not(:last-child),
+.border-emerald-200,
+.border-amber-200,
+.border-purple-200,
+.border-blue-200,
+.border-red-200 {
+  border-color: var(--border) !important;
+}
+
+.text-black {
+  color: var(--text) !important;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.section,
+.container {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.footer {
+  background: #f3e1b0;
+  border-top: 2px solid #eab308;
+  color: #1f2937;
+  padding: 40px 60px 20px;
+}
+
+.footer-heading {
+  color: #111827;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+.footer-link {
+  display: block;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+  transition: color 200ms ease, transform 200ms ease;
+}
+
+.footer-link:hover {
+  color: #b45309;
+  transform: translateX(3px);
+}
+
+.footer-bottom {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 20px;
+  padding-top: 12px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.dark .footer {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.dark .footer-heading {
+  color: #f8fafc;
+}
+
+.dark .footer-link {
+  color: #cbd5f5;
+}
+
+.dark .footer-link:hover {
+  color: #fbbf24;
+}
+
+.dark .footer-bottom {
+  border-top: 1px solid #1e293b;
+  color: #94a3b8;
+}
+
+.dash-table,
+.table {
+  background: var(--card);
+  color: var(--text);
+}
+
+.dash-table th,
+.table th {
+  color: var(--muted);
+}
+
+.dash-table tbody tr:hover,
+.table tr:hover {
+  background: #1e293b;
+}
+
+.updates-card {
+  background: #E6F7EF;
+}
+
+.about-card {
+  background: #F3F0FF;
+}
+
+.dark .updates-card {
+  background: #022c22 !important;
+}
+
+.dark .about-card {
+  background: #1e1b4b !important;
+}
+
+.dark .text-dash-text,
+.dark .text-slate-800,
+.dark .text-gray-900 {
+  color: var(--text) !important;
+}
+
+.dark .text-dash-text-secondary,
+.dark .text-slate-500,
+.dark .text-gray-500,
+.dark .text-slate-600,
+.dark .text-gray-600 {
+  color: var(--muted) !important;
+}
+
+.dark button {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.dark button:hover {
+  opacity: 0.9;
+}
+
+.theme-indicator {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+  padding: 2px 6px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--card) 80%, var(--bg) 20%);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.dark .hero {
+  background: #0b132b !important;
+  color: #f8fafc !important;
+}
+
+.dark .stats-card {
+  background: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* === Focus / Keyboard Navigation === */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #0A3D62;
+  outline-offset: 2px;
+}
+
+/* === Skip to main content (screen reader) === */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  padding: 12px 24px;
+  background: #0A3D62;
+  color: white;
+  z-index: 10000;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* === Tricolor Band Animation === */
+.tricolor-band {
+  background: linear-gradient(90deg, #FF9933 0%, #FF9933 33%, #FFFFFF 33%, #FFFFFF 66%, #138808 66%, #138808 100%);
+}
+
+/* === Hero Section Gradient === */
+.hero-gradient {
+  background: linear-gradient(135deg, #0A3D62 0%, #0E4D7A 40%, #0A3D62 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero-gradient::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(255,153,51,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 50%, rgba(19,136,8,0.06) 0%, transparent 60%);
+  animation: hero-shimmer 8s ease-in-out infinite alternate;
+}
+@keyframes hero-shimmer {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(3%, 2%); }
+}
+
+/* Scoped shape update for admin panel: sharper corners similar to voter panel */
+.admin-root .rounded-xl {
+  border-radius: 0.5rem !important;
+}
+
+.admin-root .rounded-lg {
+  border-radius: 0.375rem !important;
+}
+
+.admin-root .rounded-md {
+  border-radius: 0.25rem !important;
+}
+
+.admin-root .rounded {
+  border-radius: 0.25rem !important;
+}
