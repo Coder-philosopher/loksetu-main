@@ -7,7 +7,9 @@ import { analyticsService } from '../services/analyticsService';
 
 const router = Router();
 // ✅ FIXED: Pointing to the correct blockchain route
-const LEDGER_GATEWAY_URL = 'http://localhost:3000/register-voter';
+const LEDGER_BASE_URL = process.env.GATEWAY_URL || 'http://localhost:3000';
+const LEDGER_GATEWAY_URL = process.env.LEDGER_REGISTER_VOTER_URL || `${LEDGER_BASE_URL}/register-voter`;
+const LEDGER_CHANGE_STATE_URL = process.env.LEDGER_CHANGE_STATE_URL || `${LEDGER_BASE_URL}/change-state`;
 
 const DELHI_LOK_SABHA_SEATS = [
     'Chandni Chowk',
@@ -675,7 +677,7 @@ router.post('/update-location', async (req: any, res: any) => {
 
         // 2. UPDATE BLOCKCHAIN LEDGER
         // We call the Blockchain Server (Port 3000) to execute the smart contract
-        const ledgerUrl = 'http://localhost:3000/change-state';
+        const ledgerUrl = LEDGER_CHANGE_STATE_URL;
         
         await axios.post(ledgerUrl, {
             voterId,
@@ -1060,7 +1062,7 @@ router.post('/master-reset', async (req: any, res: any) => {
         console.log('\n📍 Step 3/4: Clearing mock ledger/blockchain...');
         try {
             // Call the gateway's reset endpoint if it exists, or make a direct call
-            const gatewayResetUrl = process.env.GATEWAY_RESET_URL || 'http://localhost:3000/reset-ledger';
+            const gatewayResetUrl = process.env.GATEWAY_RESET_URL || `${LEDGER_BASE_URL}/reset-ledger`;
             await axios.post(gatewayResetUrl, {}, { timeout: 5000 }).catch(err => {
                 // Gateway might not have reset endpoint - that's okay
                 console.warn('⚠️  Gateway reset endpoint not available - ledger not cleared');

@@ -8,9 +8,11 @@ import { analyticsService } from '../services/analyticsService';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'LokSetu_super_secret_key';
+const LEDGER_BASE_URL = process.env.GATEWAY_URL || 'http://localhost:3000';
 
 // 🔗 Point this to your server-core Fabric Gateway
-const LEDGER_URL = 'http://localhost:3000/cast-vote'; 
+const LEDGER_URL = process.env.LEDGER_URL || `${LEDGER_BASE_URL}/cast-vote`;
+const LEDGER_MINT_TOKEN_URL = process.env.LEDGER_MINT_TOKEN_URL || `${LEDGER_BASE_URL}/mint-token`;
 
 // 🆔 CONSTANTS
 const CURRENT_ELECTION_ID = "LOKSETU_LS_2026"; 
@@ -376,7 +378,7 @@ router.post('/cast', authenticateToken, async (req: any, res: any) => {
           // Recovery path for dynamic multi-election flows:
           // mint token for this exact election and retry cast once.
           try {
-            await axios.post('http://localhost:3000/mint-token', {
+            await axios.post(LEDGER_MINT_TOKEN_URL, {
               electionId: election_id,
               voterID: user.epic_id,
             }, { timeout: 8000 });

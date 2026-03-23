@@ -19,7 +19,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) throw new Error("Missing JWT_SECRET in .env");
 
 // 🔗 CONFIGURATION
-const LEDGER_BASE_URL = 'http://localhost:3000'; // Gateway URL
+const LEDGER_BASE_URL = process.env.GATEWAY_URL || 'http://localhost:3000'; // Gateway URL
 const CURRENT_ELECTION_ID = "LOKSETU_LS_2026";     // Must match your Chaincode Election ID
 
 const normalizeName = (value: string) => value.trim().replace(/\s+/g, ' ');

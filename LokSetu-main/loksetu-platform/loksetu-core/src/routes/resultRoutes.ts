@@ -4,7 +4,8 @@ import pool from '../config/db';
 import { analyticsService } from '../services/analyticsService';
 
 const router = Router();
-const LEDGER_ALL_URL = 'http://localhost:3000/query-all';
+const LEDGER_BASE_URL = process.env.GATEWAY_URL || 'http://localhost:3000';
+const LEDGER_ALL_URL = process.env.LEDGER_QUERY_ALL_URL || `${LEDGER_BASE_URL}/query-all`;
 
 type ScopeType = 'LS' | 'VS' | 'MCD';
 

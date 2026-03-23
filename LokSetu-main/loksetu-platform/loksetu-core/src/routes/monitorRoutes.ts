@@ -3,6 +3,8 @@ import pool from '../config/db';
 import { getFraudAlerts, getFraudStats, getAnalyticsData, registerSSEClient, removeSSEClient, getGraphNetworkData, getBehavioralSummary } from '../services/fraudDetection';
 
 const router = Router();
+const LEDGER_BASE_URL = process.env.GATEWAY_URL || 'http://localhost:3000';
+const LEDGER_QUERY_ALL_URL = process.env.LEDGER_QUERY_ALL_URL || `${LEDGER_BASE_URL}/query-all`;
 
 // --- FRAUD ALERTS ---
 router.get('/fraud/alerts', async (_req: any, res: any) => {
@@ -147,7 +149,7 @@ router.get('/health', async (_req: any, res: any) => {
     const start = Date.now();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);
-    const resp = await fetch('http://localhost:3000/query-all', { signal: controller.signal });
+    const resp = await fetch(LEDGER_QUERY_ALL_URL, { signal: controller.signal });
     clearTimeout(timeout);
     checks.gateway = { status: resp.ok ? 'healthy' : 'degraded', latencyMs: Date.now() - start, required: false, note: 'Hyperledger Fabric' };
   } catch {
