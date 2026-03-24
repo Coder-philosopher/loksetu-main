@@ -1,16 +1,38 @@
-# React + Vite
+# 🗳️ LokSetu Admin Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the administrative control panel for the **LokSetu** e-voting platform. It allows election authorities to monitor live voting, manage registrations, observe AI-detected fraud alerts, and generate election results securely from the blockchain.
 
-Currently, two official plugins are available:
+### 🚀 Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## React Compiler
+2. **Configure environment:**
+   Create a `.env` file or update existing one:
+   ```env
+   VITE_API_URL=https://backend.loksetu.nitrr.in
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+3. **Run development server:**
+   ```bash
+   npm run dev
+   ```
 
-## Expanding the ESLint configuration
+### 🛰️ Live Access
+You can access the deployed admin panel at: [admin.loksetu.nitrr.in](https://admin.loksetu.nitrr.in)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+### ✨ Features
+- **Real-time Monitoring:** Visualize voter turnout and system load.
+- **Fraud Analysis:** View AI-detected suspicious activities.
+- **Election Setup:** Register candidates and manage constituencies.
+- **Result Auditing:** Direct access to blockchain-tallied results.
+
+Built with **React 19**, **Vite**, **Tailwind CSS**, and **Recharts**.
+
+---
+<p align="center">Built by <b>Team Garud (NIT Raipur)</b></p>
+

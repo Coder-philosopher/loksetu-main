@@ -89,15 +89,27 @@ Biometric Identity → Secure Authentication → Blockchain Vote Recording → A
 
 ---
 
-# 🏗️ System Architecture
+# 🗳️ LokSetu Platform Components
 
-```
-Voter Portal (React)
-        │
-        ▼
-Backend API (Node + Express)
-        │
-        ├── PostgreSQL Database
+This directory contains the main software layers of the **LokSetu** ecosystem. The platform is architected to provide a seamless, secure, and multi-tenant e-voting experience across India.
+
+### 📂 Sub-Projects
+
+| Component | Description | Technologies |
+| --- | --- | --- |
+| [**client-admin**](client-admin) | Management dashboard for election authorities. | React 19, Recharts |
+| [**client-voter**](client-voter) | Public interface for citizens to cast votes. | React 19, Face++ |
+| [**loksetu-core**](loksetu-core) | The central API hub and fraud detection engine. | Node.js, TypeScript, Kafka |
+| [**loksetu-chaincode**](loksetu-chaincode) | Blockchain smart contracts for vote storage. | Hyperledger Fabric |
+
+### 🚀 Production URLs
+- **Voter Panel:** [voter.loksetu.nitrr.in](https://voter.loksetu.nitrr.in)
+- **Admin Panel:** [admin.loksetu.nitrr.in](https://admin.loksetu.nitrr.in)
+- **API Backend:** [backend.loksetu.nitrr.in](https://backend.loksetu.nitrr.in)
+
+---
+<p align="center">Built by <b>Team Garud (NIT Raipur)</b></p>
+
         │
         ├── AI Fraud Detection Engine
         │

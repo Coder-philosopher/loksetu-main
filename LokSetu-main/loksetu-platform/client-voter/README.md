@@ -1,17 +1,39 @@
-# React + Vite
+# 🗳️ LokSetu Voter Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the primary citizen interface for the **LokSetu** e-voting platform. It provides a secure environment for voters to authenticate themselves using biometrics and cast their votes directly onto the blockchain ledger.
 
-Currently, two official plugins are available:
+### 🚀 Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## React Compiler
+2. **Configure environment:**
+   Create a `.env` file or update existing one:
+   ```env
+   VITE_API_URL=https://backend.loksetu.nitrr.in
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+3. **Run development server:**
+   ```bash
+   npm run dev
+   ```
 
-## Expanding the ESLint configuration
+### 🛰️ Live Access
+You can access the deployed voter portal at: [voter.loksetu.nitrr.in](https://voter.loksetu.nitrr.in)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+### ✨ Features
+- **Biometric Login:** Face verification via Face++ API integration.
+- **Secure Ballot:** Cast encrypted votes with Zero-Knowledge Proof (ZKP) verification.
+- **Multi-language Support:** Voter access in 13 Indian languages.
+- **Real-time Confirmation:** Instant blockchain confirmation of cast votes.
+
+Built with **React 19**, **Vite**, **Tailwind CSS**, and **i18next**.
+
+---
+<p align="center">Built by <b>Team Garud (NIT Raipur)</b></p>
+
 
