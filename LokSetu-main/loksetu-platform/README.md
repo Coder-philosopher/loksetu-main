@@ -177,7 +177,7 @@ client-voter/
 server-core/
     backend API + fraud engine
 
-satya-chaincode/
+loksetu-chaincode/
     Hyperledger smart contracts
 
 docker-compose.yml

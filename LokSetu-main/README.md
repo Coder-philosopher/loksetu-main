@@ -210,7 +210,7 @@ client-voter/
 server-core/
   Backend API + fraud engine
 
-satya-chaincode/
+loksetu-chaincode/
   Hyperledger Fabric smart contracts
 
 docker-compose.yml

@@ -3,250 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LokSetu | Secure Electronic Voting System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>LokSetu | Secure Blockchain E-Voting Ecosystem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Cormorant+Garamond:ital,wght@0,600;1,400;1,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav class="navbar">
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
         <div class="nav-container">
-            <a href="#" class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-                <div class="logo-icon">
-                  <img src="./images/logo.png" alt="Company Logo" width="200" height="60">
-                </div>
+            <a href="#" class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+                    <div class="logo-mark">
+        <img src="loksetu-logo.svg" alt="LokSetu Logo" class="logo-img" />
+    </div>
                 <div class="logo-text">
-                    <span>LokSetu</span>
-                    <small>Secure Authentication & Transparent Yielding Architecture</small>
+                    <span class="logo-name">LokSetu</span>
+                    <span class="logo-tagline">Integrity in every vote</span>
                 </div>
             </a>
-            
-            <ul class="nav-links">
-                <li><a href="#challenge" class="nav-item">The Challenge</a></li>
-                <li><a href="#impact" class="nav-item">Impact</a></li>
-                <li><a href="#remote-booths" class="nav-item">Solution</a></li>
-                <li><a href="#feasibility" class="nav-item">Feasibility</a></li>
-                <li><a href="#tech-stack" class="nav-item">Tech Stack</a></li>
-                <li><a href="#team" class="nav-item">DevLofars</a></li>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#mission" class="nav-item">Mission</a></li>
+                <li><a href="#panels" class="nav-item">Panels</a></li>
+                <li><a href="#ghost" class="nav-item">Security</a></li>
+                <li><a href="#tech-stack" class="nav-item">Stack</a></li>
+                <li><a href="#team" class="nav-item">Team</a></li>
             </ul>
 
-            <a href="https://github.com/Coder-philosopher/LokSetu" target="_blank" class="github-btn">
-                <i class="fa-brands fa-github"></i> <span>Repo</span>
-            </a>
-            
-            <div class="mobile-menu-icon"><i class="fa-solid fa-bars"></i></div>
+            <div class="nav-right">
+                <a href="https://github.com/Coder-philosopher/loksetu-main/tree/main/LokSetu-main" target="_blank" rel="noopener" class="github-btn">
+                    <i class="fa-brands fa-github"></i> <span>View on GitHub</span>
+                </a>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
         </div>
     </nav>
 
+    <!-- Hero -->
     <header class="hero">
-        <div class="hero-texture"></div>
-        <div class="container hero-content hidden-el">
-            <div class="badge-pill float-anim">
-                <i class="fa-solid fa-building-columns"></i> <span>One Nation, One Election Ready</span>
+        <div class="hero-bg">
+            <div class="hero-img-overlay"></div>
+            <img src="https://images.unsplash.com/photo-1541726260-e6b6a6a2b6b4?w=1600&q=80&auto=format&fit=crop" alt="" class="hero-bg-img" id="heroBgImg">
+            <div class="hero-gradient"></div>
+            <!-- Tricolor stripe -->
+            <div class="tricolor-stripe">
+                <div class="tc-saffron"></div>
+                <div class="tc-white"></div>
+                <div class="tc-green"></div>
             </div>
-            <h1>Democracy That Moves <br>With You.</h1>
-            <p class="hero-desc">
-                We are shifting the ballot from a static address to a <strong>mobile digital identity</strong>. 
-                LokSetu enables migrants to vote for their home constituency from any authorized terminal—securely and instantly.
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-eyebrow hidden-el">
+                <span class="eyebrow-dot"></span>
+                <span>Securing the World's Largest Democracy</span>
+            </div>
+
+            <h1 class="hero-title hidden-el">
+                The Future of<br>
+                <em class="hero-em">Sovereign</em><br>
+                <span class="hero-word">Voting.</span>
+            </h1>
+
+            <p class="hero-desc hidden-el">
+                A tamper-proof, scalable, decentralized E-Voting system built on<br>
+                <strong>Hyperledger Fabric</strong> — eliminating logistical barriers with 100% election integrity.
             </p>
-            
-            <div class="hero-cta">
-                <a href="#remote-booths" class="btn-primary">How It Works</a>
-                <a href="#tech-stack" class="btn-secondary">View Architecture</a>
+
+            <div class="hero-cta hidden-el">
+                <a href="#panels" class="btn-primary">
+                    <span>Explore Live Panels</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="#tech-stack" class="btn-ghost">
+                    <span>Technical Specs</span>
+                </a>
             </div>
+
+            <div class="hero-stats hidden-el">
+                <div class="hstat">
+                    <span class="hstat-num">1.4B</span>
+                    <span class="hstat-label">Citizens Covered</span>
+                </div>
+                <div class="hstat-divider"></div>
+                <div class="hstat">
+                    <span class="hstat-num">0%</span>
+                    <span class="hstat-label">Double Voting Risk</span>
+                </div>
+                <div class="hstat-divider"></div>
+                <div class="hstat">
+                    <span class="hstat-num">100%</span>
+                    <span class="hstat-label">Audit Transparency</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-cue hidden-el">
+            <span>Scroll to explore</span>
+            <div class="scroll-line"></div>
         </div>
     </header>
 
-    <section id="challenge" class="section">
+    <!-- Mission -->
+    <section id="mission" class="section mission-section">
         <div class="container">
+            <div class="section-label hidden-el"><span>01 — Mission</span></div>
             <div class="section-header hidden-el">
-                <h2>The Existing Gaps</h2>
-                <p>Why the current infrastructure struggles with modern migration.</p>
+                <h2 class="section-title">Solving the<br><em>Core Problem</em></h2>
+                <p class="section-sub">A Secure & Scalable Blockchain-based E-Voting System to eliminate logistical barriers and provide a tamper-proof audit trail for India's democratic process.</p>
             </div>
-            <div class="feature-grid">
-                <div class="feature-card hidden-el">
-                    <div class="icon-circle red"><i class="fa-solid fa-suitcase-rolling"></i></div>
-                    <h3>The Travel Tax</h3>
-                    <p>Migrants shouldn't lose their vote because they can't afford the trip home.</p>
+
+            <div class="mission-grid">
+                <div class="mission-card hidden-el" style="--accent: var(--saffron);">
+                    <div class="mc-number">01</div>
+                    <div class="mc-icon"><i class="fa-solid fa-link-slash"></i></div>
+                    <h3>Zero Logistical Barriers</h3>
+                    <p>Enable remote voting for migrant populations without requiring physical presence at home constituencies.</p>
+                    <div class="mc-bar" style="background: var(--saffron);"></div>
                 </div>
-                <div class="feature-card hidden-el" style="transition-delay: 100ms;">
-                    <div class="icon-circle red"><i class="fa-solid fa-users-slash"></i></div>
-                    <h3>The 30% Void</h3>
-                    <p>Nearly 300 million eligible voters are "missing" largely due to location constraints.</p>
+                <div class="mission-card hidden-el" style="--accent: var(--navy);">
+                    <div class="mc-number">02</div>
+                    <div class="mc-icon"><i class="fa-solid fa-lock"></i></div>
+                    <h3>End-to-End Encryption</h3>
+                    <p>Votes are encrypted client-side using hybrid RSA+AES, decrypted only by the blockchain smart contract during tallying.</p>
+                    <div class="mc-bar" style="background: var(--navy);"></div>
                 </div>
-                <div class="feature-card hidden-el" style="transition-delay: 200ms;">
-                    <div class="icon-circle red"><i class="fa-solid fa-server"></i></div>
-                    <h3>Database Silos</h3>
-                    <p>Disconnected lists create confusion when voters move between states.</p>
+                <div class="mission-card hidden-el" style="--accent: var(--emerald);">
+                    <div class="mc-number">03</div>
+                    <div class="mc-icon"><i class="fa-solid fa-database"></i></div>
+                    <h3>Tamper-Proof Audit</h3>
+                    <p>Every transaction recorded on a distributed ledger, providing an immutable trail for 100% transparency.</p>
+                    <div class="mc-bar" style="background: var(--emerald);"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="impact" class="section">
+    <!-- Panels -->
+    <section id="panels" class="section panels-section">
         <div class="container">
-            <div class="section-header hidden-el">
-                <div class="badge-pill green" style="background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;"><i class="fa-solid fa-chart-pie"></i> The Cost of Democracy</div>
-                <h2>Why Digital Transformation is Urgent</h2>
-                <p>Rising costs and stagnating turnout require a structural shift.</p>
+            <div class="section-label hidden-el"><span>02 — Platform</span></div>
+            <div class="section-header centered hidden-el">
+                <h2 class="section-title">Platform <em>Ecosystem</em></h2>
+                <p class="section-sub">Localized access for voters and granular control for administrators.</p>
             </div>
-    
-            <div class="impact-grid">
-                
-                <div class="impact-card hidden-el">
-                    <h3>Election Expenditure</h3>
-                    <p class="sub-text">Cost of Indian General Elections (Est.)</p>
-                    
-                    <div class="bar-chart">
-                        <div class="bar-group">
-                            <div class="bar-value">₹30k Cr</div>
-                            <div class="bar" data-height="30%" style="height: 0;"></div>
-                            <div class="bar-label">2014</div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-value">₹60k Cr</div>
-                            <div class="bar" data-height="50%" style="height: 0;"></div>
-                            <div class="bar-label">2019</div>
-                        </div>
-                        <div class="bar-group">
-                            <div class="bar-value highlight">₹1.35L Cr</div>
-                            <div class="bar active" data-height="100%" style="height: 0;"></div>
-                            <div class="bar-label">2024</div>
-                        </div>
-                    </div>
-                    <div class="source-cite">
-                        <small>Source: Centre for Media Studies (CMS) Report</small>
-                    </div>
-                </div>
-    
-                <div class="impact-card hidden-el" style="transition-delay: 100ms;">
-                    <h3>The 300 Million Gap</h3>
-                    <p class="sub-text">2019 Voter Turnout Analysis</p>
-                    
-                    <div class="pie-chart-container">
-                        <div class="pie-chart" style="background: conic-gradient(#3b82f6 0% 67%, #e2e8f0 67% 100%);">
-                            <div class="pie-center">
-                                <span>67%</span>
-                                <small>Turnout</small>
-                            </div>
-                        </div>
-                        <div class="legend">
-                            <div class="legend-item">
-                                <span class="dot blue"></span> Voted (600M)
-                            </div>
-                            <div class="legend-item">
-                                <span class="dot gray"></span> Missing (300M)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="source-cite">
-                        <small>Source: Election Commission of India (ECI)</small>
-                    </div>
-                </div>
-    
-                <div class="impact-card highlight-card hidden-el" style="transition-delay: 200ms;">
-                    <div class="icon-circle green"><i class="fa-solid fa-money-bill-trend-up"></i></div>
-                    <h3>Projected Savings</h3>
-                    <p>Implementing synchronized elections (ONOE) with digital infrastructure could save:</p>
-                    <div class="big-stat">₹4,500 Cr</div>
-                    <p class="sub-text">Per Election Cycle</p>
-                    <div class="source-cite">
-                        <small>Source: Law Commission Draft Report</small>
-                    </div>
-                </div>
-    
-            </div>
-        </div>
-    </section>
 
-    <section id="remote-booths" class="section">
-        <div class="container">
-            <div class="split-layout">
-                <div class="split-text hidden-el">
-                    <div class="badge-pill blue">The Solution</div>
-                    <h2>Remote Digital Booths</h2>
-                    <p class="lead-text">Bring the constituency to the voter, not the voter to the constituency.</p>
-                    
-                    <ul class="check-list">
-                        <li>
-                            <i class="fa-solid fa-check"></i>
-                            <div>
-                                <strong>Dynamic Constituency Loading</strong>
-                                <p>A voter from Rajasthan working in Mumbai enters a LokSetu booth. The system instantly loads <em>their</em> local candidates.</p>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-check"></i>
-                            <div>
-                                <strong>UIDAI (Aadhaar) Integration</strong>
-                                <p>Built to plug into the <strong>UIDAI API</strong> for 100% verification using government biometric data.</p>
-                            </div>
-                        </li>
-                    </ul>
+            <div class="panels-grid">
+                <!-- Voter -->
+                <div class="panel-card voter-panel hidden-el">
+                    <div class="panel-img-wrap">
+                        <img src="https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=800&q=80&auto=format&fit=crop" alt="Voter Terminal" class="panel-img">
+                        <div class="panel-img-overlay"></div>
+                        <div class="panel-img-badge">Citizen Access</div>
+                    </div>
+                    <div class="panel-body">
+                        <h3>Voter Terminal</h3>
+                        <p>Biometric authentication via Face Verification, dynamic constituency loading, and instant vote confirmation with ZKP receipts.</p>
+                        <ul class="panel-features">
+                            <li><i class="fa-solid fa-check"></i> Face Liveness Detection</li>
+                            <li><i class="fa-solid fa-check"></i> ZKP Vote Receipt</li>
+                            <li><i class="fa-solid fa-check"></i> Encrypted Ballot Cast</li>
+                        </ul>
+                        <a href="https://voter.loksetu.nitrr.in" target="_blank" rel="noopener" class="panel-btn voter-btn">
+                            Access Voter Portal <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="split-visual hidden-el">
-                    <div class="info-card">
-                        <div class="card-header">
-                            <i class="fa-solid fa-id-card"></i> Verification Flow
-                        </div>
-                        <div class="card-body">
-                            <div class="step active">
-                                <span class="dot"></span>
-                                <p><strong>Step 1:</strong> Biometric Scan (Aadhaar/Face)</p>
-                            </div>
-                            <div class="step">
-                                <span class="dot"></span>
-                                <p><strong>Step 2:</strong> Retrieve Home Constituency</p>
-                            </div>
-                            <div class="step">
-                                <span class="dot"></span>
-                                <p><strong>Step 3:</strong> Load Ballot Interface</p>
-                            </div>
-                        </div>
+
+                <!-- Admin -->
+                <div class="panel-card admin-panel hidden-el">
+                    <div class="panel-img-wrap">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80&auto=format&fit=crop" alt="Admin Dashboard" class="panel-img">
+                        <div class="panel-img-overlay"></div>
+                        <div class="panel-img-badge admin-badge">Election Authority</div>
+                    </div>
+                    <div class="panel-body">
+                        <h3>Commission Dashboard</h3>
+                        <p>Real-time monitoring, fraud detection, automated result tallying, and management of candidate registrations across constituencies.</p>
+                        <ul class="panel-features">
+                            <li><i class="fa-solid fa-check"></i> Real-time Monitoring</li>
+                            <li><i class="fa-solid fa-check"></i> Fraud Detection AI</li>
+                            <li><i class="fa-solid fa-check"></i> Automated Tallying</li>
+                        </ul>
+                        <a href="https://admin.loksetu.nitrr.in" target="_blank" rel="noopener" class="panel-btn admin-btn">
+                            Access Admin Panel <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="ghost-voter" class="section bg-light">
+    <!-- Ghost Voter / Security -->
+    <section id="ghost" class="section ghost-section">
         <div class="container">
-            <div class="split-layout reverse">
-                <div class="split-text hidden-el">
-                    <div class="badge-pill purple">Zero-Trust Security</div>
-                    <h2>Eliminating The "Ghost Voter"</h2>
-                    <p class="lead-text">How we ensure one person, one vote—forever.</p>
-                    
-                    <ul class="check-list">
-                        <li>
-                            <i class="fa-solid fa-shield-halved"></i>
-                            <div>
-                                <strong>Liveness Detection</strong>
-                                <p>AI analyzes micro-movements to ensure the person is physically present, preventing photo-spoofing.</p>
+            <div class="ghost-split">
+                <div class="ghost-text hidden-el">
+                    <div class="section-label"><span>03 — Security</span></div>
+                    <h2 class="section-title">Eliminating The<br><em>"Ghost Voter"</em></h2>
+                    <p class="lead-text">One person. One vote. Forever guaranteed.</p>
+
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-icon" style="background: rgba(255,153,51,0.12); color: var(--saffron);">
+                                <i class="fa-solid fa-shield-halved"></i>
                             </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-link"></i>
+                            <div>
+                                <strong>AI Liveness Detection</strong>
+                                <p>AI analyzes micro-movements to ensure the person is physically present — preventing photo-spoofing and deepfake attacks.</p>
+                            </div>
+                        </div>
+                        <div class="check-item">
+                            <div class="check-icon" style="background: rgba(0,0,128,0.08); color: var(--navy);">
+                                <i class="fa-solid fa-link"></i>
+                            </div>
                             <div>
                                 <strong>Immutable Blockchain Ledger</strong>
-                                <p>Once a vote is cast, Hyperledger Fabric locks it. It cannot be altered or deleted.</p>
+                                <p>Once cast on Hyperledger Fabric, votes are permanently locked. No alteration, no deletion — ever.</p>
                             </div>
-                        </li>
-                    </ul>
+                        </div>
+                        <div class="check-item">
+                            <div class="check-icon" style="background: rgba(19,136,8,0.08); color: var(--emerald);">
+                                <i class="fa-solid fa-user-shield"></i>
+                            </div>
+                            <div>
+                                <strong>Zero-Knowledge Proofs</strong>
+                                <p>Verify voter eligibility without exposing any sensitive identity data on-chain. Privacy by design.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="split-visual hidden-el">
-                    <div class="info-card purple-theme">
-                        <div class="card-header">
-                            <i class="fa-solid fa-user-lock"></i> Security Layer
+
+                <div class="ghost-visual hidden-el">
+                    <div class="security-card">
+                        <div class="sc-header">
+                            <i class="fa-solid fa-fingerprint"></i>
+                            <span>Security Status</span>
+                            <div class="sc-live"><span class="live-dot"></span>Live</div>
                         </div>
-                        <div class="security-stat">
-                            <h3 class="stat-num counter" data-target="0">0</h3><span>%</span>
-                            <p>Probability of Double Voting</p>
+                        <div class="sc-stats">
+                            <div class="sc-stat">
+                                <div class="sc-big"><span class="counter" data-target="0">0</span>%</div>
+                                <p>Double Voting Probability</p>
+                                <div class="sc-progress"><div class="sc-fill" style="width:0%; background: var(--saffron);"></div></div>
+                            </div>
+                            <div class="sc-stat">
+                                <div class="sc-big"><span class="counter" data-target="100">0</span>%</div>
+                                <p>Audit Trail Coverage</p>
+                                <div class="sc-progress"><div class="sc-fill animated-fill" style="width:100%; background: var(--emerald);"></div></div>
+                            </div>
+                            <div class="sc-stat">
+                                <div class="sc-big"><span class="counter" data-target="256">0</span>-bit</div>
+                                <p>AES Encryption Strength</p>
+                                <div class="sc-progress"><div class="sc-fill animated-fill" style="width:90%; background: var(--navy);"></div></div>
+                            </div>
                         </div>
-                        <div class="security-stat">
-                            <h3 class="stat-num counter" data-target="100">0</h3><span>%</span>
-                            <p>Traceable Audit Trail</p>
+                        <div class="sc-shield">
+                            <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=400&q=80&auto=format&fit=crop" alt="Security" class="sc-img">
+                            <div class="sc-img-overlay">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>Protected</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -254,47 +275,69 @@
         </div>
     </section>
 
-    <section id="feasibility" class="section">
+    <!-- Feasibility / Scale -->
+    <section id="feasibility" class="section feasibility-section">
         <div class="container">
-            <div class="split-layout">
-                <div class="split-text hidden-el">
-                    <div class="badge-pill orange">Nation Scale</div>
-                    <h2>Built for "One Nation, One Election"</h2>
-                    <p class="lead-text">Handling 1.4 Billion people requires more than just a database. It requires an ecosystem.</p>
-                    
-                    <ul class="check-list">
-                        <li>
+            <div class="feasibility-split">
+                <div class="feasibility-visual hidden-el">
+                    <div class="scale-card">
+                        <div class="sc-header">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Nation-Scale Load</span>
+                        </div>
+                        <div class="load-bars">
+                            <div class="load-row">
+                                <span class="load-label">Network Load</span>
+                                <div class="load-track">
+                                    <div class="load-bar saffron-bar animated-fill" style="width: 30%;"></div>
+                                </div>
+                                <span class="load-pct">30%</span>
+                            </div>
+                            <div class="load-row">
+                                <span class="load-label">Server Health</span>
+                                <div class="load-track">
+                                    <div class="load-bar green-bar animated-fill" style="width: 98%;"></div>
+                                </div>
+                                <span class="load-pct">98%</span>
+                            </div>
+                            <div class="load-row">
+                                <span class="load-label">Kafka Queue</span>
+                                <div class="load-track">
+                                    <div class="load-bar navy-bar animated-fill" style="width: 65%;"></div>
+                                </div>
+                                <span class="load-pct">65%</span>
+                            </div>
+                        </div>
+                        <div class="kafka-badge">
                             <i class="fa-solid fa-bolt"></i>
+                            <span>Kafka ensures stability even at 90% load</span>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=80&auto=format&fit=crop" alt="Infrastructure" class="scale-img">
+                    </div>
+                </div>
+                <div class="feasibility-text hidden-el">
+                    <div class="section-label"><span>04 — Scale</span></div>
+                    <h2 class="section-title">Built for<br><em>"One Nation,<br>One Election"</em></h2>
+                    <p class="lead-text">Handling 1.4 billion people requires more than a database — it requires an ecosystem.</p>
+
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-icon" style="background: rgba(255,153,51,0.12); color: var(--saffron);">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
                             <div>
                                 <strong>Heartbeat Sync (Apache Kafka)</strong>
-                                <p>Terminals send data in "Heartbeats". Kafka queues millions of requests instantly, ensuring zero lag.</p>
+                                <p>Terminals send data in "Heartbeats". Kafka queues millions of concurrent requests instantly — zero lag, zero drop.</p>
                             </div>
-                        </li>
-                        <li>
-                            <i class="fa-solid fa-network-wired"></i>
+                        </div>
+                        <div class="check-item">
+                            <div class="check-icon" style="background: rgba(19,136,8,0.08); color: var(--emerald);">
+                                <i class="fa-solid fa-network-wired"></i>
+                            </div>
                             <div>
                                 <strong>Edge Computing</strong>
-                                <p>Face processing happens on the local device, reducing bandwidth usage for rural 4G connections.</p>
+                                <p>Face processing happens on the local device, dramatically reducing bandwidth usage for rural 4G connections.</p>
                             </div>
-                        </li>
-                    </ul>
-                </div>
-                <div class="split-visual hidden-el">
-                    <div class="info-card orange-theme">
-                        <div class="card-header">
-                            <i class="fa-solid fa-chart-line"></i> Load Management
-                        </div>
-                        <div class="card-body">
-                            <p style="font-size: 0.9rem; margin-bottom: 10px;"><strong>System Status:</strong></p>
-                            <div class="load-bar-container">
-                                <span>Network Load</span>
-                                <div class="bar-bg"><div class="bar-fill" style="width: 30%;"></div></div>
-                            </div>
-                            <div class="load-bar-container">
-                                <span>Server Health</span>
-                                <div class="bar-bg"><div class="bar-fill" style="width: 98%; background: #22c55e;"></div></div>
-                            </div>
-                            <p style="font-size: 0.8rem; margin-top: 15px; color: #64748b;">*Kafka ensures stability even at 90% load.</p>
                         </div>
                     </div>
                 </div>
@@ -302,106 +345,109 @@
         </div>
     </section>
 
-    <section id="tech-stack" class="section bg-light">
+    <!-- Tech Stack -->
+    <section id="tech-stack" class="section tech-section">
         <div class="container">
+            <div class="section-label hidden-el"><span>05 — Technology</span></div>
             <div class="section-header hidden-el">
-                <h2>Under the Hood</h2>
-                <p>Enterprise-grade technologies powering the LokSetu ecosystem.</p>
+                <h2 class="section-title">Under the <em>Hood</em></h2>
+                <p class="section-sub">Enterprise-grade technologies powering the LokSetu ecosystem.</p>
             </div>
+
             <div class="tech-grid">
                 <div class="tech-card hidden-el">
-                    <div class="tech-icon"><i class="fa-solid fa-cubes-stacked"></i></div>
+                    <div class="tech-num">01</div>
+                    <div class="tech-icon-wrap navy-icon"><i class="fa-solid fa-cubes-stacked"></i></div>
                     <h4>Hyperledger Fabric</h4>
-                    <p>Private, permissioned blockchain ensuring immutable vote recording and zero double-voting.</p>
+                    <p>Private, permissioned blockchain ensuring immutable vote recording and zero double-voting at enterprise scale.</p>
+                    <div class="tech-tag">Blockchain</div>
                 </div>
-                <div class="tech-card hidden-el" style="transition-delay: 100ms;">
-                    <div class="tech-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="tech-card hidden-el">
+                    <div class="tech-num">02</div>
+                    <div class="tech-icon-wrap saffron-icon"><i class="fa-solid fa-bolt"></i></div>
                     <h4>Apache Kafka</h4>
-                    <p>High-throughput stream processing to handle millions of concurrent "Heartbeat" syncs.</p>
+                    <p>High-throughput stream processing to handle millions of concurrent "Heartbeat" syncs without latency.</p>
+                    <div class="tech-tag">Messaging</div>
                 </div>
-                <div class="tech-card hidden-el" style="transition-delay: 200ms;">
-                    <div class="tech-icon"><i class="fa-solid fa-expand"></i></div>
+                <div class="tech-card hidden-el">
+                    <div class="tech-num">03</div>
+                    <div class="tech-icon-wrap green-icon"><i class="fa-solid fa-expand"></i></div>
                     <h4>Face++ API</h4>
-                    <p>Advanced biometric facial recognition with liveness detection to prevent spoofing.</p>
+                    <p>Advanced biometric facial recognition with liveness detection — preventing spoofing at every terminal.</p>
+                    <div class="tech-tag">Biometrics</div>
                 </div>
-                <div class="tech-card hidden-el" style="transition-delay: 300ms;">
-                    <div class="tech-icon"><i class="fa-brands fa-node-js"></i></div>
+                <div class="tech-card hidden-el">
+                    <div class="tech-num">04</div>
+                    <div class="tech-icon-wrap navy-icon"><i class="fa-brands fa-node-js"></i></div>
                     <h4>Node.js Backend</h4>
-                    <p>Scalable, non-blocking architecture to manage API requests and booth connectivity.</p>
+                    <p>Scalable, non-blocking event-driven architecture managing all API requests and booth connectivity.</p>
+                    <div class="tech-tag">Backend</div>
+                </div>
+                <div class="tech-card hidden-el">
+                    <div class="tech-num">05</div>
+                    <div class="tech-icon-wrap saffron-icon"><i class="fa-solid fa-user-shield"></i></div>
+                    <h4>ZKP Verification</h4>
+                    <p>Zero-Knowledge Proofs verify voter eligibility without exposing sensitive identity data on-chain.</p>
+                    <div class="tech-tag">Cryptography</div>
+                </div>
+                <div class="tech-card hidden-el">
+                    <div class="tech-num">06</div>
+                    <div class="tech-icon-wrap green-icon"><i class="fa-solid fa-vault"></i></div>
+                    <h4>Hybrid E2EE</h4>
+                    <p>RSA + AES combined for secure ballot transmission — only the ledger can reveal the final count.</p>
+                    <div class="tech-tag">Encryption</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="team" class="section bg-light">
+    <!-- Team -->
+    <section id="team" class="section team-section">
         <div class="container">
-            <div class="section-header hidden-el">
-                <h2>Team DevLofars</h2>
-                <p>The engineers behind the architecture.</p>
-            </div>
-            <div class="team-grid">
-                <div class="team-card hidden-el">
-                    <div class="team-img">
-                         <img src="images/harsh.jpg" alt="Harsh" onerror="this.src='https://ui-avatars.com/api/?name=Harsh+T&background=0F172A&color=fff&size=150'">
+            <div class="team-inner hidden-el">
+                <div class="team-flag-stripe">
+                    <div class="tf-saffron"></div>
+                    <div class="tf-white">
+                        <div class="ashoka-chakra">
+                            <i class="fa-solid fa-dharmachakra"></i>
+                        </div>
                     </div>
-                    <h3>Harsh Thalor</h3>
-                    <span class="role">Team Lead</span>
-                    <div class="socials">
-                        <a href="https://github.com/Coder-philosopher"><i class="fa-brands fa-github"></i></a>
-                        <a href="https://www.linkedin.com/in/Coder-philosopher/"><i class="fa-brands fa-linkedin"></i></a>
-                    </div>
+                    <div class="tf-green"></div>
                 </div>
-                 <div class="team-card hidden-el" style="transition-delay: 100ms;">
-                    <div class="team-img">
-                         <img src="images/nitin.jpg" alt="Nitin" onerror="this.src='https://ui-avatars.com/api/?name=Nitin+R&background=0F172A&color=fff&size=150'">
+                <div class="team-content">
+                    <div class="team-eyebrow">Team "Garud" — Eagle of the Nation</div>
+                    <h2 class="team-title">Built by <em>NIT Raipur</em></h2>
+                    <p class="team-subtitle">Representing National Institute of Technology, Raipur</p>
+                    <div class="team-names">
+                        <span>Rahul Kumar</span>
+                        <span class="name-sep">·</span>
+                        <span>Kunwar Singh</span>
+                        <span class="name-sep">·</span>
+                        <span>Sachin Upadhyay</span>
+                        <span class="name-sep">·</span>
+                        <span>Abdullah Shaikh</span>
                     </div>
-                    <h3>Nitin Ror</h3>
-                    <span class="role">Backend Lead</span>
-                    <div class="socials">
-                        <a href="https://github.com/905088-nitin"><i class="fa-brands fa-github"></i></a>
-                        <a href="https://www.linkedin.com/in/nitin-kumar-776108324/"><i class="fa-brands fa-linkedin"></i></a>
-                    </div>
-                </div>
-                 <div class="team-card hidden-el" style="transition-delay: 200ms;">
-                    <div class="team-img">
-                         <img src="images/aman.jpeg" alt="Aman" onerror="this.src='https://ui-avatars.com/api/?name=Aman+Y&background=0F172A&color=fff&size=150'">
-                    </div>
-                    <h3>Aman Yadav</h3>
-                    <span class="role">UI/UX Lead</span>
-                    <div class="socials">
-                        <a href="https://github.com/storm0o"><i class="fa-brands fa-github"></i></a>
-                        <a href="https://www.linkedin.com/in/aman-yadav-837a1b356/"><i class="fa-brands fa-linkedin"></i></a>
-                    </div>
-                </div>
-                 <div class="team-card hidden-el" style="transition-delay: 300ms;">
-                    <div class="team-img">
-                         <img src="images/harshit.jpg" alt="Harshit" onerror="this.src='https://ui-avatars.com/api/?name=Harshit+S&background=0F172A&color=fff&size=150'">
-                    </div>
-                    <h3>Harshit Sehrawat</h3>
-                    <span class="role">Designer</span>
-                    <div class="socials">
-                        <a href="https://github.com/harshit123sehrawat"><i class="fa-brands fa-github"></i></a>
-                        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-                    </div>
-                </div>
-                 <div class="team-card hidden-el" style="transition-delay: 400ms;">
-                    <div class="team-img">
-                         <img src="images/ankit.jpeg" alt="Ankit" onerror="this.src='https://ui-avatars.com/api/?name=Ankit+B&background=0F172A&color=fff&size=150'">
-                    </div>
-                    <h3>Ankit Bhamu</h3>
-                    <span class="role">Database</span>
-                    <div class="socials">
-                        <a href="https://github.com/ankitbhamu8769"><i class="fa-brands fa-github"></i></a>
-                        <a href="https://www.linkedin.com/in/ankit-bhamu-966793324/"><i class="fa-brands fa-linkedin"></i></a>
-                    </div>
+                    <div class="team-event">Presented at India Innovates 2026, Bharat Mandapam, New Delhi.</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer>
-        <div class="container footer-content">
-            <p>&copy; 2026 LokSetu | DevLofars</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="logo-mark sm">
+                        <span class="lm-s"></span><span class="lm-w"></span><span class="lm-g"></span>
+                    </div>
+                    <span class="footer-name">LokSetu</span>
+                </div>
+                <p class="footer-copy">© 2024 LokSetu Architecture. Empowering the Sovereignty of the Ballot.</p>
+                <a href="https://github.com/Coder-philosopher/loksetu-main/tree/main/LokSetu-main" target="_blank" class="footer-gh">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+            </div>
         </div>
     </footer>
 

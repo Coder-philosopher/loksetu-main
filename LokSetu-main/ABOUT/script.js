@@ -1,128 +1,144 @@
-document.addEventListener("DOMContentLoaded", function() {
-    
-    // --- 1. ScrollSpy (Active Navbar State) ---
-    const sections = document.querySelectorAll("section");
-    const navLi = document.querySelectorAll(".nav-links .nav-item");
+document.addEventListener("DOMContentLoaded", function () {
 
-    window.addEventListener('scroll', () => {
+    // ─── 1. Navbar scroll state ───────────────────────────────────────
+    const navbar = document.getElementById("navbar");
+    function updateNavbar() {
+        if (window.scrollY > 40) {
+            navbar.classList.add("scrolled");
+        } else {
+            navbar.classList.remove("scrolled");
+        }
+    }
+    window.addEventListener("scroll", updateNavbar, { passive: true });
+    updateNavbar();
+
+
+    // ─── 2. ScrollSpy (Active nav state) ─────────────────────────────
+    const sections = document.querySelectorAll("section[id]");
+    const navItems = document.querySelectorAll(".nav-links .nav-item");
+
+    function updateActiveNav() {
         let current = "";
-        
         sections.forEach((section) => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            // -150 offset handles the sticky navbar height
-            if (pageYOffset >= sectionTop - 150) { 
+            if (window.scrollY >= section.offsetTop - 180) {
                 current = section.getAttribute("id");
             }
         });
+        navItems.forEach((item) => {
+            item.classList.toggle("active", item.getAttribute("href") === `#${current}`);
+        });
+    }
+    window.addEventListener("scroll", updateActiveNav, { passive: true });
+    updateActiveNav();
 
-        navLi.forEach((li) => {
-            li.classList.remove("active");
-            if (li.getAttribute("href") === `#${current}`) {
-                li.classList.add("active");
+
+    // ─── 3. Reveal on scroll ─────────────────────────────────────────
+    const revealObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("show");
+                    revealObserver.unobserve(entry.target);
+                }
+            });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".hidden-el").forEach((el) => revealObserver.observe(el));
+
+
+    // ─── 4. Smooth scroll for nav links ──────────────────────────────
+    navItems.forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute("href"));
+            if (target) {
+                const offset = target.offsetTop - (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 72) - 20;
+                window.scrollTo({ top: offset, behavior: "smooth" });
+                // Close mobile menu if open
+                navLinksEl.classList.remove("nav-open");
+                hamburger.classList.remove("open");
             }
         });
     });
 
-    // --- 2. Advanced Reveal Animation (Intersection Observer) ---
-    const observerOptions = {
-        threshold: 0.15, // Trigger when 15% of element is visible
-        rootMargin: "0px 0px -50px 0px"
-    };
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                // A. Add 'show' class to fade in the element
-                entry.target.classList.add("show");
-                
-                // B. Trigger Counter Animation (if present in the element)
-                if (entry.target.querySelector('.counter')) {
-                    startCounters(entry.target);
-                }
-
-                // C. Trigger Bar Chart Animation (if present in the element)
-                const bars = entry.target.querySelectorAll('.bar');
-                if (bars.length > 0) {
-                    bars.forEach(bar => {
-                        // Read the data-height attribute from HTML
-                        const targetHeight = bar.getAttribute('data-height');
-                        // Apply it to the style to trigger CSS transition
-                        bar.style.height = targetHeight;
-                    });
-                }
-                
-                // Stop observing once shown
-                observer.unobserve(entry.target); 
-            }
-        });
-    }, observerOptions);
-
-    const hiddenElements = document.querySelectorAll(".hidden-el");
-    hiddenElements.forEach((el) => observer.observe(el));
+    // ─── 5. Hamburger mobile menu ─────────────────────────────────────
+    const hamburger = document.getElementById("hamburger");
+    const navLinksEl = document.getElementById("navLinks");
+    hamburger.addEventListener("click", () => {
+        hamburger.classList.toggle("open");
+        navLinksEl.classList.toggle("nav-open");
+    });
 
 
-    // --- 3. Number Counter Logic ---
-    function startCounters(section) {
-        const counters = section.querySelectorAll('.counter');
-        counters.forEach(counter => {
-            const target = +counter.getAttribute('data-target');
-            const duration = 2000; // 2 seconds
-            
-            // Use startTime to ensure smooth 60fps animation
-            const startTime = performance.now();
-
-            const updateCounter = (currentTime) => {
-                const elapsedTime = currentTime - startTime;
-                const progress = Math.min(elapsedTime / duration, 1); // 0 to 1
-                
-                // Ease-out function for smoother end
-                const easeOut = 1 - Math.pow(1 - progress, 3);
-                
-                const currentVal = Math.ceil(easeOut * target);
-                counter.innerText = currentVal;
-
-                if (progress < 1) {
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.innerText = target;
-                }
-            };
-            requestAnimationFrame(updateCounter);
-        });
+    // ─── 6. Counter animation ─────────────────────────────────────────
+    function animateCounter(el) {
+        const target = parseInt(el.dataset.target, 10);
+        const duration = 1400;
+        const start = performance.now();
+        function tick(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+            el.textContent = Math.round(ease * target);
+            if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
     }
 
-    // --- 4. Mobile Menu Toggle ---
-    const menuIcon = document.querySelector('.mobile-menu-icon');
-    const navLinks = document.querySelector('.nav-links');
-
-    if(menuIcon && navLinks) {
-        menuIcon.addEventListener('click', () => {
-            // Toggles the CSS class defined in style.css
-            navLinks.classList.toggle('nav-open');
-            
-            // Toggle icon between bars and times (X)
-            const icon = menuIcon.querySelector('i');
-            if(navLinks.classList.contains('nav-open')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-xmark');
-            } else {
-                icon.classList.remove('fa-xmark');
-                icon.classList.add('fa-bars');
-            }
-        });
-
-        // Close menu when a link is clicked
-        const navItems = document.querySelectorAll('.nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                if(navLinks.classList.contains('nav-open')) {
-                    navLinks.classList.remove('nav-open');
-                    const icon = menuIcon.querySelector('i');
-                    icon.classList.remove('fa-xmark');
-                    icon.classList.add('fa-bars');
+    const counterObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    counterObserver.unobserve(entry.target);
                 }
             });
-        });
+        },
+        { threshold: 0.5 }
+    );
+    document.querySelectorAll(".counter").forEach((el) => counterObserver.observe(el));
+
+
+    // ─── 7. Animate fill bars ─────────────────────────────────────────
+    // Store target widths before zeroing them, then animate on reveal
+    const fillBars = document.querySelectorAll(".animated-fill");
+    fillBars.forEach((bar) => {
+        // Capture inline style width as target
+        const target = bar.style.width;
+        bar.dataset.targetWidth = target;
+        bar.style.width = "0%";
+    });
+
+    const barObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const bar = entry.target;
+                    // Small delay for visual delight
+                    setTimeout(() => {
+                        bar.style.transition = "width 1.4s cubic-bezier(0.25, 1, 0.5, 1)";
+                        bar.style.width = bar.dataset.targetWidth;
+                    }, 200);
+                    barObserver.unobserve(bar);
+                }
+            });
+        },
+        { threshold: 0.3 }
+    );
+    fillBars.forEach((bar) => barObserver.observe(bar));
+
+
+    // ─── 8. Hero image parallax (subtle) ─────────────────────────────
+    const heroBgImg = document.getElementById("heroBgImg");
+    if (heroBgImg) {
+        window.addEventListener("scroll", () => {
+            const scrolled = window.scrollY;
+            if (scrolled < window.innerHeight) {
+                heroBgImg.style.transform = `translateY(${scrolled * 0.25}px)`;
+            }
+        }, { passive: true });
     }
+
 });
