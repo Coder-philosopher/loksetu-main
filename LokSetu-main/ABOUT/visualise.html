@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LokSetu — Blockchain E-Voting Visualizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Cormorant+Garamond:ital,wght@0,600;1,400;1,600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+/* ─── DESIGN TOKENS ─────────────────────────────── */
+:root {
+  --orange: #F57B1F;
+  --orange-light: #FFA556;
+  --orange-dim: rgba(245,123,31,.12);
+  --green: #1E8F50;
+  --green-light: #27AE60;
+  --green-dim: rgba(30,143,80,.12);
+  --blue: #1565C0;
+  --blue-light: #1E88E5;
+  --blue-dim: rgba(21,101,192,.12);
+  --white: #FAFAF9;
+  --off: #F3F0EC;
+  --border: #D9D0C4;
+  --text: #1A1410;
+  --text-muted: #7A6E65;
+  --surface: #FFFFFF;
+  --surface2: #F7F4F0;
+  --shadow: 0 4px 24px rgba(26,20,16,.08);
+  --shadow-lg: 0 12px 48px rgba(26,20,16,.14);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font-body: 'Sora', sans-serif;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --node-w: 200px;
+}
+
+/* ─── RESET ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ────────────────────────────────────── */
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(250,250,249,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 64px;
+}
+.header-inner {
+  max-width: 1400px; margin: 0 auto;
+  height: 100%; display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: .75rem; }
+.logo-name {
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 600;
+  color: var(--orange); line-height: 1;
+}
+.logo-tag {
+  display: block; font-size: .65rem; color: var(--text-muted);
+  font-family: var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+}
+.header-badges { display: flex; gap: .5rem; flex-wrap: wrap; }
+.badge {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .7rem; font-family: var(--font-mono);
+  padding: .3rem .7rem; border-radius: 999px;
+  border: 1px solid;
+}
+.badge i { font-size: .55rem; }
+.badge-green { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+.badge-green i { animation: pulse-dot 2s infinite; }
+.badge-blue { color: var(--blue); border-color: var(--blue); background: var(--blue-dim); }
+.badge-orange { color: var(--orange); border-color: var(--orange); background: var(--orange-dim); }
+
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; } 50% { opacity: .3; }
+}
+
+/* ─── HERO ──────────────────────────────────────── */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 100px 2rem 80px;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(245,123,31,.06) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 50% at 80% 80%, rgba(21,101,192,.05) 0%, transparent 60%);
+}
+#hexCanvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .35; }
+.hero-content { position: relative; z-index: 1; text-align: center; max-width: 720px; }
+.hero-eyebrow {
+  font-size: .8rem; font-family: var(--font-mono);
+  color: var(--orange); letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: .5rem;
+}
+.hero-title {
+  font-family: var(--font-display); font-size: clamp(3rem,7vw,5.5rem);
+  font-weight: 600; line-height: 1.05; color: var(--text);
+  margin-bottom: 1.25rem;
+}
+.hero-title em { color: var(--orange); font-style: italic; }
+.hero-sub {
+  font-size: 1.05rem; color: var(--text-muted); line-height: 1.7;
+  margin-bottom: 2.5rem; max-width: 560px; margin-left: auto; margin-right: auto;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: .6rem;
+  background: var(--orange); color: white;
+  font-family: var(--font-body); font-size: .95rem; font-weight: 600;
+  padding: .85rem 2rem; border-radius: 999px; border: none; cursor: pointer;
+  transition: all .2s; box-shadow: 0 4px 20px rgba(245,123,31,.35);
+}
+.btn-primary:hover { background: var(--orange-light); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(245,123,31,.45); }
+.btn-primary:active { transform: translateY(0); }
+
+.hero-chain-preview {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: .75rem;
+  margin-top: 3rem;
+  animation: fadeUp 1s .6s both;
+}
+.mini-block {
+  background: var(--surface); border: 1.5px solid var(--border);
+  padding: .5rem .9rem; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: .72rem; color: var(--text-muted);
+  animation: fadeUp 1s var(--d) both;
+  transition: all .3s;
+}
+.mini-block.active { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+.mini-block.pending {
+  border-color: var(--green); color: var(--green); background: var(--green-dim);
+  animation: fadeUp 1s var(--d) both, glow-green 2s .6s infinite;
+}
+.chain-link { font-size: .9rem; color: var(--border); }
+.chain-link.pulse { animation: pulse-dot 1.5s infinite; color: var(--green); }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes glow-green {
+  0%,100% { box-shadow: 0 0 0 0 rgba(30,143,80,0); }
+  50% { box-shadow: 0 0 12px 4px rgba(30,143,80,.25); }
+}
+
+/* ─── INTEGRITY WIDGET ──────────────────────────── */
+.integrity-widget {
+  position: fixed; right: 1.5rem; top: 50%;
+  transform: translateY(-50%);
+  z-index: 90; width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  box-shadow: var(--shadow-lg);
+  transition: all .4s;
+}
+.integrity-widget.hacked {
+  border-color: #e74c3c;
+  background: rgba(231,76,60,.04);
+}
+.iw-header {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .78rem; font-weight: 600; color: var(--green);
+  margin-bottom: .85rem; padding-bottom: .75rem;
+  border-bottom: 1px solid var(--border);
+}
+.iw-stat {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: .72rem; color: var(--text-muted); margin-bottom: .6rem; gap: .4rem;
+  flex-wrap: wrap;
+}
+.iw-bar {
+  flex: 1; height: 6px; background: var(--off);
+  border-radius: 999px; overflow: hidden; min-width: 50px;
+}
+.iw-fill {
+  height: 100%; background: linear-gradient(90deg, var(--green), var(--green-light));
+  border-radius: 999px; transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.iw-fill.danger { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+.iw-val { font-family: var(--font-mono); font-size: .72rem; color: var(--text); }
+.iw-nodes { display: flex; gap: 4px; }
+.nd {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border); border: 1.5px solid var(--border);
+  transition: all .4s;
+}
+.nd.active { background: var(--green); border-color: var(--green); }
+.nd.dead { background: #e74c3c; border-color: #e74c3c; animation: pulse-dot 1s infinite; }
+.iw-counter {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 700;
+  color: var(--orange); transition: all .2s;
+}
+.iw-counter.red { color: #e74c3c; }
+.btn-hack {
+  width: 100%; margin-top: .75rem;
+  background: rgba(231,76,60,.1); color: #e74c3c;
+  border: 1px solid #e74c3c; border-radius: var(--radius-sm);
+  padding: .5rem; font-size: .72rem; font-family: var(--font-body); font-weight: 600;
+  cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: .4rem;
+}
+.btn-hack:hover { background: rgba(231,76,60,.2); }
+.btn-restore {
+  width: 100%; margin-top: .5rem;
+  background: var(--green-dim); color: var(--green);
+  border: 1px solid var(--green); border-radius: var(--radius-sm);
+  padding: .5rem; font-size: .72rem; font-family: var(--font-body); font-weight: 600;
+  cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: .4rem;
+}
+.btn-restore:hover { background: rgba(30,143,80,.2); }
+.hidden { display: none !important; }
+
+/* ─── PIPELINE SECTION ──────────────────────────── */
+.pipeline-section {
+  padding: 6rem 2rem 4rem;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+}
+.pipeline-title { text-align: center; margin-bottom: 2.5rem; }
+.pipeline-title h2 {
+  font-family: var(--font-display); font-size: 2.4rem; font-weight: 600;
+  color: var(--text); margin-bottom: .5rem;
+}
+.pipeline-title p { font-size: .9rem; color: var(--text-muted); }
+
+/* Scrubber */
+.scrubber-wrap {
+  max-width: 600px; margin: 0 auto 3rem;
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+}
+.scrubber-wrap label { font-size: .75rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: .08em; }
+.scrubber {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 6px; background: var(--border); border-radius: 999px; outline: none; cursor: pointer;
+}
+.scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px;
+  background: var(--orange); border-radius: 50%;
+  border: 3px solid white; box-shadow: 0 2px 8px rgba(245,123,31,.4);
+  cursor: pointer; transition: transform .15s;
+}
+.scrubber::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.scrub-labels {
+  width: 100%; display: flex; justify-content: space-between;
+  font-size: .65rem; font-family: var(--font-mono); color: var(--text-muted);
+}
+
+/* Pipeline track */
+.pipeline-track {
+  position: relative;
+  display: flex; align-items: center;
+  max-width: 1300px; margin: 0 auto;
+  padding: 1rem 0 2rem;
+  overflow-x: auto;
+  gap: 0;
+}
+.pipeline-track::-webkit-scrollbar { height: 6px; }
+.pipeline-track::-webkit-scrollbar-track { background: var(--off); border-radius: 3px; }
+.pipeline-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Packet */
+.vote-packet {
+  position: absolute;
+  top: calc(50% - 80px);
+  left: 0;
+  z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  pointer-events: none;
+  transition: left .7s cubic-bezier(.4,0,.2,1), top .7s;
+  transform: translate(-50%, -50%);
+}
+.vote-packet svg { filter: drop-shadow(0 0 12px rgba(245,123,31,.6)); }
+.p-ring { animation: spin-slow 8s linear infinite; transform-origin: center; }
+.p-dash { animation: spin-slow 6s linear infinite reverse; transform-origin: center; }
+.p-core { animation: breathe 2s ease-in-out infinite; }
+.packet-label {
+  font-family: var(--font-mono); font-size: .6rem; color: var(--orange);
+  background: var(--surface); border: 1px solid var(--orange);
+  padding: 1px 6px; border-radius: 999px; letter-spacing: .08em;
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes breathe { 0%,100% { opacity: .2; } 50% { opacity: .5; } }
+
+/* Node card */
+.node-card {
+  flex: 0 0 var(--node-w);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1rem 1rem;
+  display: flex; flex-direction: column; align-items: center; gap: .5rem;
+  text-align: center; cursor: pointer;
+  transition: all .3s;
+  position: relative;
+}
+.node-card:hover, .node-card.active {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-dim), var(--shadow);
+  transform: translateY(-4px);
+}
+.node-card.completed { border-color: var(--green); background: linear-gradient(180deg, rgba(30,143,80,.04), transparent); }
+.node-card.completed .node-number { color: var(--green); border-color: var(--green); }
+.node-card.error { border-color: #e74c3c; animation: shake .4s; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.node-number {
+  font-family: var(--font-mono); font-size: .7rem; font-weight: 700;
+  color: var(--orange); border: 1px solid var(--orange);
+  padding: 2px 8px; border-radius: 999px; margin-bottom: .25rem;
+}
+.node-icon-wrap {
+  width: 80px; height: 80px;
+  background: var(--off); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: .5rem 0;
+}
+.node-icon { width: 64px; height: 64px; color: var(--text-muted); transition: color .3s; }
+.node-card.active .node-icon, .node-card:hover .node-icon { color: var(--orange); }
+.node-card.completed .node-icon { color: var(--green); }
+.node-card h3 { font-size: .9rem; font-weight: 700; line-height: 1.3; color: var(--text); }
+.node-card p { font-size: .75rem; color: var(--text-muted); line-height: 1.5; }
+.btn-dive {
+  margin-top: .5rem;
+  background: var(--orange-dim); color: var(--orange);
+  border: 1px solid var(--orange); border-radius: var(--radius-sm);
+  padding: .35rem .75rem; font-size: .7rem; font-family: var(--font-mono);
+  cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: .35rem;
+}
+.btn-dive:hover { background: var(--orange); color: white; }
+.node-status {
+  font-size: .65rem; font-family: var(--font-mono); color: var(--text-muted);
+  background: var(--off); padding: 2px 8px; border-radius: 999px;
+  margin-top: .25rem;
+}
+.node-status.active { color: var(--orange); background: var(--orange-dim); }
+.node-status.done { color: var(--green); background: var(--green-dim); }
+.node-status.error { color: #e74c3c; background: rgba(231,76,60,.1); }
+
+/* Scan line animation */
+.scan-line { animation: scan-move 2s ease-in-out infinite; transform-origin: left; }
+@keyframes scan-move {
+  0%,100% { opacity: 0; transform: scaleX(0); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
+/* Key animation */
+.key-anim { animation: key-move 3s ease-in-out infinite; }
+@keyframes key-move {
+  0% { transform: translateX(0); opacity: .8; }
+  60% { transform: translateX(20px); opacity: 1; }
+  100% { transform: translateX(20px); opacity: 0; }
+}
+
+/* Pipe connector */
+.pipe-connector {
+  flex: 0 0 80px; min-width: 60px; align-self: center;
+  display: flex; flex-direction: column; align-items: center; gap: .3rem;
+}
+.pipe-connector svg { width: 100%; height: 20px; }
+.pipe-connector.active svg line,
+.pipe-connector.active svg polygon { stroke: var(--orange); fill: var(--orange); }
+.conn-label { font-size: .6rem; font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; }
+
+/* ─── CHAIN SECTION ─────────────────────────────── */
+.chain-section {
+  padding: 5rem 2rem;
+  border-top: 1px solid var(--border);
+}
+.section-title {
+  font-family: var(--font-display); font-size: 2.2rem; font-weight: 600;
+  text-align: center; margin-bottom: .5rem;
+}
+.section-sub { text-align: center; font-size: .9rem; color: var(--text-muted); margin-bottom: 3rem; }
+.chain-wrap {
+  display: flex; align-items: stretch; gap: 0;
+  max-width: 1000px; margin: 0 auto;
+  overflow-x: auto; padding-bottom: 1rem;
+}
+.chain-block {
+  flex: 0 0 180px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 1rem .85rem;
+  font-family: var(--font-mono); font-size: .75rem;
+  position: relative; transition: all .3s;
+}
+.chain-block.active {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-dim), var(--shadow);
+  animation: glow-orange 2s infinite;
+}
+.chain-block.confirmed { border-color: var(--green); }
+.chain-block.hacked {
+  border-color: #e74c3c !important;
+  background: rgba(231,76,60,.05);
+  animation: shake .4s, glow-red 2s infinite !important;
+}
+@keyframes glow-orange {
+  0%,100% { box-shadow: 0 0 0 3px rgba(245,123,31,.15); }
+  50% { box-shadow: 0 0 20px 6px rgba(245,123,31,.3); }
+}
+@keyframes glow-red {
+  0%,100% { box-shadow: 0 0 0 3px rgba(231,76,60,.15); }
+  50% { box-shadow: 0 0 20px 6px rgba(231,76,60,.3); }
+}
+.cb-num { font-weight: 700; color: var(--orange); font-size: .85rem; margin-bottom: .5rem; }
+.chain-block.confirmed .cb-num { color: var(--green); }
+.chain-block.hacked .cb-num { color: #e74c3c !important; }
+.cb-hash { color: var(--text); margin-bottom: .3rem; }
+.cb-hash span { color: var(--blue); }
+.cb-prev { color: var(--text-muted); margin-bottom: .3rem; font-size: .68rem; }
+.cb-votes { color: var(--text-muted); margin-bottom: .5rem; font-size: .68rem; }
+.cb-status { font-size: .65rem; color: var(--green); background: var(--green-dim); padding: 2px 6px; border-radius: 999px; display: inline-block; }
+.pending-status { color: var(--orange) !important; background: var(--orange-dim) !important; }
+.chain-arrow {
+  align-self: center; color: var(--border); font-size: 1.4rem;
+  flex-shrink: 0; padding: 0 .5rem;
+}
+
+/* ─── DOUBLE VOTE SECTION ──────────────────────── */
+.dv-section {
+  background: var(--surface2); border-top: 1px solid var(--border);
+  padding: 5rem 2rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+  max-width: 1200px; margin: 0 auto;
+}
+.dv-section h2 {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 600; margin-bottom: 1rem;
+}
+.dv-section > .dv-left > p { font-size: .9rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1.5rem; }
+code {
+  font-family: var(--font-mono); font-size: .85em;
+  background: var(--off); padding: 1px 6px; border-radius: 4px; color: var(--orange);
+}
+.dv-flow { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.5rem; }
+.dv-step {
+  display: flex; align-items: center; gap: .75rem;
+  font-size: .85rem; padding: .6rem .85rem;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  transition: all .3s;
+}
+.dv-step.active-step { border-color: var(--orange); background: var(--orange-dim); }
+.dv-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--orange); color: white;
+  font-family: var(--font-mono); font-size: .7rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.dv-num.dv-fork { background: var(--blue); }
+.dv-arrow { font-size: 1rem; color: var(--text-muted); text-align: center; padding-left: 1rem; }
+.dv-branches { display: flex; gap: 1rem; margin-top: .4rem; }
+.dv-branch { flex: 1; display: flex; flex-direction: column; gap: .4rem; }
+.dv-branch .dv-step { font-size: .78rem; }
+.dv-badge {
+  font-family: var(--font-mono); font-size: .72rem; font-weight: 700;
+  padding: 3px 12px; border-radius: 999px; display: inline-block; text-align: center;
+}
+.dv-badge.green { background: var(--green-dim); color: var(--green); }
+.dv-badge.red { background: rgba(231,76,60,.12); color: #e74c3c; }
+.dv-branch.green .dv-step { border-color: var(--green); }
+.dv-branch.red .dv-step { border-color: #e74c3c; }
+.btn-simulate-dv {
+  background: var(--blue); color: white;
+  border: none; border-radius: 999px;
+  padding: .75rem 1.5rem; font-size: .85rem; font-family: var(--font-body); font-weight: 600;
+  cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: .5rem;
+  box-shadow: 0 4px 16px rgba(21,101,192,.3);
+}
+.btn-simulate-dv:hover { background: var(--blue-light); transform: translateY(-2px); }
+
+/* Terminal */
+.dv-terminal {
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  height: 100%; min-height: 340px;
+  display: flex; flex-direction: column;
+}
+.term-bar {
+  background: #2A2420; padding: .65rem 1rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.tb { width: 12px; height: 12px; border-radius: 50%; }
+.tb-r { background: #FF5F57; }
+.tb-y { background: #FEBC2E; }
+.tb-g { background: #28C840; }
+.term-title { font-family: var(--font-mono); font-size: .7rem; color: #888; margin-left: .5rem; }
+.term-code {
+  flex: 1; background: #1A1410; color: #E8DCC8;
+  padding: 1.25rem; font-family: var(--font-mono); font-size: .78rem; line-height: 1.7;
+  overflow-y: auto;
+}
+.c-comment { color: #6B6560; }
+.c-keyword { color: #F57B1F; }
+.c-fn { color: #1E88E5; }
+.c-str { color: #27AE60; }
+.c-cls { color: #FFA556; }
+.term-output {
+  background: #1A1410; padding: .75rem 1.25rem;
+  font-family: var(--font-mono); font-size: .78rem;
+  border-top: 1px solid #2A2420; min-height: 40px;
+}
+.term-line { display: block; margin-bottom: .3rem; animation: fadeIn .3s; }
+.term-ok { color: #27AE60; }
+.term-err { color: #e74c3c; }
+.term-info { color: #1E88E5; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ─── MODALS ─────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(26,20,16,.6); backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+.modal-overlay.open { display: flex; animation: fadeIn .2s; }
+.modal {
+  background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); max-width: 680px; width: 100%;
+  max-height: 80vh; overflow-y: auto; position: relative;
+  padding: 2rem; border: 1px solid var(--border);
+  animation: scaleIn .25s cubic-bezier(.4,0,.2,1);
+}
+@keyframes scaleIn {
+  from { transform: scale(.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: var(--off); border: none; border-radius: 50%;
+  width: 32px; height: 32px; cursor: pointer; font-size: .9rem;
+  color: var(--text-muted); transition: all .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: var(--border); color: var(--text); }
+.modal-content h2 {
+  font-family: var(--font-display); font-size: 1.8rem; margin-bottom: .4rem;
+}
+.modal-content .mc-tag {
+  font-family: var(--font-mono); font-size: .7rem; color: var(--orange);
+  background: var(--orange-dim); padding: 2px 8px; border-radius: 999px;
+  display: inline-block; margin-bottom: 1rem;
+}
+.modal-content p { font-size: .9rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem; }
+.modal-content pre {
+  background: #1A1410; color: #E8DCC8;
+  padding: 1rem; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: .78rem; line-height: 1.7;
+  overflow-x: auto; margin-bottom: 1rem;
+}
+.modal-content .key-fact {
+  background: var(--orange-dim); border-left: 3px solid var(--orange);
+  padding: .75rem 1rem; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: .85rem; margin-bottom: .75rem;
+}
+.modal-content .key-fact strong { color: var(--orange); }
+
+/* ─── TOAST ──────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: var(--text); color: white; padding: .75rem 1.5rem;
+  border-radius: 999px; font-size: .85rem; z-index: 300;
+  box-shadow: var(--shadow-lg); transition: transform .3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ─── SCROLLBAR ─────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 900px) {
+  .integrity-widget { display: none; }
+  .dv-section { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .header-badges { display: none; }
+  .hero-title { font-size: 2.8rem; }
+  .pipeline-title h2 { font-size: 1.8rem; }
+  .section-title { font-size: 1.7rem; }
+}
+
+</style>
+</head>
+<body>
+
+  <!-- ─── HEADER ─────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+          <polygon points="18,2 34,10 34,26 18,34 2,26 2,10" fill="none" stroke="var(--orange)" stroke-width="2"/>
+          <polygon points="18,8 28,13 28,23 18,28 8,23 8,13" fill="var(--orange)" opacity="0.15"/>
+          <circle cx="18" cy="18" r="4" fill="var(--orange)"/>
+          <line x1="18" y1="2" x2="18" y2="8" stroke="var(--orange)" stroke-width="1.5"/>
+          <line x1="18" y1="28" x2="18" y2="34" stroke="var(--orange)" stroke-width="1.5"/>
+          <line x1="2" y1="10" x2="8" y2="13" stroke="var(--orange)" stroke-width="1.5"/>
+          <line x1="28" y1="23" x2="34" y2="26" stroke="var(--orange)" stroke-width="1.5"/>
+          <line x1="2" y1="26" x2="8" y2="23" stroke="var(--orange)" stroke-width="1.5"/>
+          <line x1="28" y1="13" x2="34" y2="10" stroke="var(--orange)" stroke-width="1.5"/>
+        </svg>
+        <div>
+          <span class="logo-name">LokSetu</span>
+          <span class="logo-tag">Blockchain E-Voting</span>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-green"><i class="fas fa-circle"></i> Ledger Active</span>
+        <span class="badge badge-blue"><i class="fas fa-shield-halved"></i> Encrypted</span>
+        <span class="badge badge-orange"><i class="fas fa-link"></i> 4/4 Nodes Synced</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── HERO ──────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-bg">
+      <canvas id="hexCanvas"></canvas>
+    </div>
+    <div class="hero-content">
+      <p class="hero-eyebrow"><i class="fas fa-atom"></i> Technical Architecture Visualizer</p>
+      <h1 class="hero-title">The Journey of<br/><em>Every Vote</em></h1>
+      <p class="hero-sub">Watch how a single democratic decision is encrypted, validated, and permanently etched into an immutable blockchain — from biometric capture to tamper-proof ledger.</p>
+      <button class="btn-primary" id="startJourney">
+        <i class="fas fa-play-circle"></i> Begin the Vote Journey
+      </button>
+    </div>
+    <div class="hero-chain-preview">
+      <div class="mini-block" style="--d:0s">B#1881</div>
+      <div class="chain-link">⬡</div>
+      <div class="mini-block" style="--d:.2s">B#1882</div>
+      <div class="chain-link">⬡</div>
+      <div class="mini-block active" style="--d:.4s">B#1883</div>
+      <div class="chain-link pulse">⬡</div>
+      <div class="mini-block pending" style="--d:.6s">NEW</div>
+    </div>
+  </section>
+
+  <!-- ─── INTEGRITY WIDGET ──────────────────────── -->
+  <aside class="integrity-widget" id="integrityWidget">
+    <div class="iw-header">
+      <i class="fas fa-heartbeat"></i>
+      <span>Live Integrity Monitor</span>
+    </div>
+    <div class="iw-stat">
+      <span>Ledger Health</span>
+      <div class="iw-bar"><div class="iw-fill" id="ledgerFill" style="width:100%"></div></div>
+      <span class="iw-val" id="ledgerPct">100%</span>
+    </div>
+    <div class="iw-stat">
+      <span>Nodes in Sync</span>
+      <div class="iw-nodes" id="nodesDots">
+        <span class="nd active"></span><span class="nd active"></span>
+        <span class="nd active"></span><span class="nd active"></span>
+      </div>
+      <span class="iw-val" id="nodesVal">4/4</span>
+    </div>
+    <div class="iw-stat">
+      <span>Votes Committed</span>
+      <span class="iw-counter" id="voteCounter">0</span>
+    </div>
+    <div class="iw-stat">
+      <span>Double-Vote Blocks</span>
+      <span class="iw-counter red" id="doubleVoteCounter">0</span>
+    </div>
+    <button class="btn-hack" id="hackBtn"><i class="fas fa-skull-crossbones"></i> Simulate Tamper</button>
+    <button class="btn-restore hidden" id="restoreBtn"><i class="fas fa-rotate-left"></i> Restore Chain</button>
+  </aside>
+
+  <!-- ─── PIPELINE ──────────────────────────────── -->
+  <section class="pipeline-section" id="pipeline">
+    <div class="pipeline-title">
+      <h2>The 5-Node Vote Pipeline</h2>
+      <p>Click any node to explore — or press <strong>Begin Journey</strong> to animate automatically</p>
+    </div>
+
+    <!-- Scrub Slider -->
+    <div class="scrubber-wrap">
+      <label>Timeline Scrubber</label>
+      <input type="range" min="0" max="4" step="1" value="0" id="scrubber" class="scrubber"/>
+      <div class="scrub-labels">
+        <span>Biometric</span><span>Encrypt</span><span>Validate</span><span>Ledger</span><span>Audit</span>
+      </div>
+    </div>
+
+    <!-- Nodes Row -->
+    <div class="pipeline-track" id="pipelineTrack">
+
+      <!-- Packet SVG traveler -->
+      <div class="vote-packet" id="votePacket">
+        <svg width="48" height="48" viewBox="0 0 48 48">
+          <circle cx="24" cy="24" r="20" fill="none" stroke="var(--orange)" stroke-width="2" class="p-ring"/>
+          <circle cx="24" cy="24" r="12" fill="var(--orange)" opacity=".2" class="p-core"/>
+          <circle cx="24" cy="24" r="6" fill="var(--orange)" class="p-dot"/>
+          <circle cx="24" cy="24" r="20" fill="none" stroke="var(--orange)" stroke-width="1" stroke-dasharray="4 4" class="p-dash"/>
+        </svg>
+        <span class="packet-label">VOTE</span>
+      </div>
+
+      <!-- Node 1 -->
+      <div class="node-card" data-node="0" id="node0">
+        <div class="node-number">01</div>
+        <div class="node-icon-wrap">
+          <svg class="node-icon" viewBox="0 0 80 80">
+            <!-- Face -->
+            <circle cx="40" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="33" cy="29" r="2.5" fill="currentColor"/>
+            <circle cx="47" cy="29" r="2.5" fill="currentColor"/>
+            <path d="M33 38 Q40 44 47 38" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <!-- Scan lines -->
+            <line x1="14" y1="20" x2="66" y2="20" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 3" class="scan-line"/>
+            <line x1="14" y1="44" x2="66" y2="44" stroke="var(--green)" stroke-width="1" stroke-dasharray="3 3" class="scan-line" style="animation-delay:.3s"/>
+            <!-- Token -->
+            <circle cx="40" cy="65" r="8" fill="var(--orange)" opacity=".8"/>
+            <text x="40" y="69" text-anchor="middle" font-size="9" fill="white" font-family="JetBrains Mono">T</text>
+          </svg>
+        </div>
+        <h3>Biometric<br/>Verification</h3>
+        <p>Face landmarks captured, PII discarded — cryptographic Voter Token issued</p>
+        <button class="btn-dive" data-modal="modal0"><i class="fas fa-code"></i> Deep Dive</button>
+        <div class="node-status" id="status0">Waiting</div>
+      </div>
+
+      <div class="pipe-connector" id="conn0">
+        <svg viewBox="0 0 120 20" preserveAspectRatio="none">
+          <line x1="0" y1="10" x2="120" y2="10" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+          <polygon points="110,4 120,10 110,16" fill="var(--border)"/>
+        </svg>
+        <div class="conn-label">JWT + Token</div>
+      </div>
+
+      <!-- Node 2 -->
+      <div class="node-card" data-node="1" id="node1">
+        <div class="node-number">02</div>
+        <div class="node-icon-wrap">
+          <svg class="node-icon" viewBox="0 0 80 80">
+            <!-- Lock body -->
+            <rect x="22" y="38" width="36" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <!-- Shackle -->
+            <path d="M30 38 V28 Q40 16 50 28 V38" fill="none" stroke="currentColor" stroke-width="2"/>
+            <!-- Keyhole -->
+            <circle cx="40" cy="52" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="40" y1="57" x2="40" y2="62" stroke="currentColor" stroke-width="2"/>
+            <!-- Key -->
+            <g class="key-anim">
+              <circle cx="20" cy="20" r="6" fill="none" stroke="var(--blue)" stroke-width="2"/>
+              <line x1="26" y1="20" x2="38" y2="20" stroke="var(--blue)" stroke-width="2"/>
+              <line x1="34" y1="20" x2="34" y2="24" stroke="var(--blue)" stroke-width="2"/>
+              <line x1="38" y1="20" x2="38" y2="24" stroke="var(--blue)" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
+        <h3>E2EE<br/>Encryption</h3>
+        <p>RSA/AES hybrid encrypts the ballot before it leaves the browser — no one can intercept</p>
+        <button class="btn-dive" data-modal="modal1"><i class="fas fa-code"></i> Deep Dive</button>
+        <div class="node-status" id="status1">Waiting</div>
+      </div>
+
+      <div class="pipe-connector" id="conn1">
+        <svg viewBox="0 0 120 20" preserveAspectRatio="none">
+          <line x1="0" y1="10" x2="120" y2="10" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+          <polygon points="110,4 120,10 110,16" fill="var(--border)"/>
+        </svg>
+        <div class="conn-label">Ciphertext</div>
+      </div>
+
+      <!-- Node 3 -->
+      <div class="node-card" data-node="2" id="node2">
+        <div class="node-number">03</div>
+        <div class="node-icon-wrap">
+          <svg class="node-icon" viewBox="0 0 80 80">
+            <!-- Shield -->
+            <path d="M40 10 L62 20 V42 Q62 60 40 70 Q18 60 18 42 V20 Z" fill="none" stroke="currentColor" stroke-width="2"/>
+            <!-- Check/eye ZKP -->
+            <ellipse cx="40" cy="40" rx="12" ry="8" fill="none" stroke="var(--green)" stroke-width="1.5"/>
+            <circle cx="40" cy="40" r="4" fill="var(--green)" opacity=".6"/>
+            <!-- X mark double vote -->
+            <line x1="54" y1="56" x2="62" y2="64" stroke="var(--red,#e74c3c)" stroke-width="2"/>
+            <line x1="62" y1="56" x2="54" y2="64" stroke="var(--red,#e74c3c)" stroke-width="2"/>
+          </svg>
+        </div>
+        <h3>ZKP &<br/>Fraud Gate</h3>
+        <p>Zero-Knowledge Proof confirms eligibility without revealing identity. Double-vote blocked.</p>
+        <button class="btn-dive" data-modal="modal2"><i class="fas fa-code"></i> Deep Dive</button>
+        <div class="node-status" id="status2">Waiting</div>
+      </div>
+
+      <div class="pipe-connector" id="conn2">
+        <svg viewBox="0 0 120 20" preserveAspectRatio="none">
+          <line x1="0" y1="10" x2="120" y2="10" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+          <polygon points="110,4 120,10 110,16" fill="var(--border)"/>
+        </svg>
+        <div class="conn-label">Valid TX</div>
+      </div>
+
+      <!-- Node 4 -->
+      <div class="node-card" data-node="3" id="node3">
+        <div class="node-number">04</div>
+        <div class="node-icon-wrap">
+          <svg class="node-icon" viewBox="0 0 80 80">
+            <!-- Block -->
+            <rect x="20" y="28" width="40" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+            <line x1="20" y1="38" x2="60" y2="38" stroke="currentColor" stroke-width="1" opacity=".5"/>
+            <text x="40" y="35" text-anchor="middle" font-size="7" fill="currentColor" font-family="JetBrains Mono" opacity=".7">#1883</text>
+            <text x="40" y="50" text-anchor="middle" font-size="6" fill="var(--orange)" font-family="JetBrains Mono">HASH:a3f9...</text>
+            <text x="40" y="60" text-anchor="middle" font-size="6" fill="var(--blue)" font-family="JetBrains Mono">PREV:7c2b...</text>
+            <!-- Chain link left -->
+            <line x1="5" y1="42" x2="20" y2="42" stroke="var(--orange)" stroke-width="2" stroke-dasharray="3 2"/>
+            <rect x="2" y="38" width="10" height="8" rx="2" fill="none" stroke="var(--orange)" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3>Hyperledger<br/>Fabric Ledger</h3>
+        <p>Consensus among peers locks the block. Immutable. Hash-linked to previous block.</p>
+        <button class="btn-dive" data-modal="modal3"><i class="fas fa-code"></i> Deep Dive</button>
+        <div class="node-status" id="status3">Waiting</div>
+      </div>
+
+      <div class="pipe-connector" id="conn3">
+        <svg viewBox="0 0 120 20" preserveAspectRatio="none">
+          <line x1="0" y1="10" x2="120" y2="10" stroke="var(--border)" stroke-width="2" stroke-dasharray="6 4"/>
+          <polygon points="110,4 120,10 110,16" fill="var(--border)"/>
+        </svg>
+        <div class="conn-label">Committed</div>
+      </div>
+
+      <!-- Node 5 -->
+      <div class="node-card" data-node="4" id="node4">
+        <div class="node-number">05</div>
+        <div class="node-icon-wrap">
+          <svg class="node-icon" viewBox="0 0 80 80">
+            <!-- Bar chart -->
+            <rect x="14" y="50" width="10" height="20" fill="var(--orange)" opacity=".7" rx="1"/>
+            <rect x="30" y="36" width="10" height="34" fill="var(--blue)" opacity=".7" rx="1"/>
+            <rect x="46" y="42" width="10" height="28" fill="var(--green)" opacity=".7" rx="1"/>
+            <rect x="62" y="26" width="10" height="44" fill="var(--orange)" opacity=".5" rx="1"/>
+            <!-- Audit check -->
+            <circle cx="65" cy="18" r="10" fill="none" stroke="var(--green)" stroke-width="2"/>
+            <polyline points="60,18 64,22 71,13" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Decentralized<br/>Audit & Tally</h3>
+        <p>Anyone can verify totals against ledger entries. Anonymity preserved via ZKP proofs.</p>
+        <button class="btn-dive" data-modal="modal4"><i class="fas fa-code"></i> Deep Dive</button>
+        <div class="node-status" id="status4">Waiting</div>
+      </div>
+
+    </div><!-- end pipeline-track -->
+  </section>
+
+  <!-- ─── CHAIN VISUALIZER ──────────────────────── -->
+  <section class="chain-section">
+    <h2 class="section-title">Immutable Chain of Blocks</h2>
+    <p class="section-sub">Each block cryptographically links to the previous — tampering any block breaks the entire chain</p>
+    <div class="chain-wrap" id="chainWrap">
+      <div class="chain-block confirmed" data-block="1880">
+        <div class="cb-num">#1880</div>
+        <div class="cb-hash">a3f9<span>c2d1</span></div>
+        <div class="cb-prev">prev: 7c2b…</div>
+        <div class="cb-votes">42 votes</div>
+        <div class="cb-status">✓ Confirmed</div>
+      </div>
+      <div class="chain-arrow">&#x27A1;</div>
+      <div class="chain-block confirmed" data-block="1881">
+        <div class="cb-num">#1881</div>
+        <div class="cb-hash">e7d3<span>a1f0</span></div>
+        <div class="cb-prev">prev: a3f9…</div>
+        <div class="cb-votes">38 votes</div>
+        <div class="cb-status">✓ Confirmed</div>
+      </div>
+      <div class="chain-arrow">&#x27A1;</div>
+      <div class="chain-block confirmed" data-block="1882">
+        <div class="cb-num">#1882</div>
+        <div class="cb-hash">b2c8<span>9e4f</span></div>
+        <div class="cb-prev">prev: e7d3…</div>
+        <div class="cb-votes">55 votes</div>
+        <div class="cb-status">✓ Confirmed</div>
+      </div>
+      <div class="chain-arrow">&#x27A1;</div>
+      <div class="chain-block active" data-block="1883" id="newBlock">
+        <div class="cb-num">#1883</div>
+        <div class="cb-hash">????<span>????</span></div>
+        <div class="cb-prev">prev: b2c8…</div>
+        <div class="cb-votes" id="newBlockVotes">0 votes</div>
+        <div class="cb-status pending-status">⏳ Forming…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── DOUBLE VOTE PREVENTION ────────────────── -->
+  <section class="dv-section">
+    <div class="dv-left">
+      <h2>Double-Vote Prevention</h2>
+      <p>The chaincode maintains a <code>VoterRegistry</code> in the state database. Before appending any ballot, it queries this registry using the Voter Token as a key.</p>
+      <div class="dv-flow">
+        <div class="dv-step active-step">
+          <span class="dv-num">1</span>
+          <span>Voter Token arrives at chaincode</span>
+        </div>
+        <div class="dv-arrow">↓</div>
+        <div class="dv-step">
+          <span class="dv-num">2</span>
+          <span>Query: <code>getState(voterToken)</code></span>
+        </div>
+        <div class="dv-arrow">↓</div>
+        <div class="dv-step">
+          <span class="dv-num dv-fork">?</span>
+          <span>Token exists in ledger?</span>
+        </div>
+        <div class="dv-branches">
+          <div class="dv-branch green">
+            <span class="dv-badge green">NO</span>
+            <div class="dv-step">Vote committed + Token recorded</div>
+          </div>
+          <div class="dv-branch red">
+            <span class="dv-badge red">YES</span>
+            <div class="dv-step">TX rejected — "VOTER_ALREADY_VOTED"</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-simulate-dv" id="simulateDV">
+        <i class="fas fa-user-slash"></i> Simulate Double-Vote Attempt
+      </button>
+    </div>
+    <div class="dv-right">
+      <div class="dv-terminal" id="dvTerminal">
+        <div class="term-bar">
+          <span class="tb tb-r"></span><span class="tb tb-y"></span><span class="tb tb-g"></span>
+          <span class="term-title">chaincode > ballot.ts</span>
+        </div>
+        <pre class="term-code" id="termCode"><span class="c-comment">// Awaiting transaction...</span>
+<span class="c-keyword">async</span> <span class="c-fn">castVote</span>(ctx, voterId, candidateId) {
+  <span class="c-comment">// Step 1: Check voter registry</span>
+  <span class="c-keyword">const</span> existing = <span class="c-keyword">await</span> ctx.stub
+    .<span class="c-fn">getState</span>(voterId);
+  
+  <span class="c-keyword">if</span> (existing &amp;&amp; existing.length &gt; 0) {
+    <span class="c-keyword">throw new</span> <span class="c-cls">Error</span>(
+      <span class="c-str">'VOTER_ALREADY_VOTED'</span>
+    );
+  }
+  
+  <span class="c-comment">// Step 2: Record on ledger</span>
+  <span class="c-keyword">await</span> ctx.stub.<span class="c-fn">putState</span>(
+    voterId,
+    Buffer.<span class="c-fn">from</span>(<span class="c-str">'VOTED'</span>)
+  );
+}</pre>
+        <div class="term-output" id="termOutput"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── MODALS ────────────────────────────────── -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalBox">
+      <button class="modal-close" id="modalClose"><i class="fas fa-xmark"></i></button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- ─── TOAST ─────────────────────────────────── -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+/* ─── LokSetu Blockchain E-Voting Visualizer ─────── */
+/* app.js — Pure Vanilla JS State Machine            */
+
+// ══════════════════════════════════════════════════
+//  SYSTEM STATE
+// ══════════════════════════════════════════════════
+const systemState = {
+  activeNode: -1,
+  isAnimating: false,
+  isHacked: false,
+  votesCommitted: 0,
+  doubleVoteAttempts: 0,
+  nodePositions: [],
+};
+
+// ══════════════════════════════════════════════════
+//  MODAL DATA
+// ══════════════════════════════════════════════════
+const modalData = {
+  modal0: {
+    title: 'Biometric Verification & Tokenization',
+    tag: 'Node 01 — Authentication Layer',
+    body: `<p>When a voter initiates the session, <code>FaceLivenessCam.jsx</code> captures 468 face landmarks via MediaPipe's FaceMesh. These landmarks form a unique geometric signature — but critically, <strong>the raw image and PII are never stored</strong>.</p>
+    <div class="key-fact"><strong>Privacy-First Design:</strong> The system extracts only geometric ratios (inter-pupillary distance, facial symmetry index). The original photo is discarded server-side immediately after comparison.</div>
+    <p>Upon successful biometric match against the PostgreSQL voter registry, a one-time cryptographic <strong>Voter Token</strong> is generated using HMAC-SHA256 salted with a session nonce. This token is the only identity artifact that travels further in the pipeline.</p>
+    <pre><span class="c-comment">// Voter token generation (loksetu-core/auth.ts)</span>
+<span class="c-keyword">const</span> voterToken = crypto
+  .<span class="c-fn">createHmac</span>(<span class="c-str">'sha256'</span>, SESSION_SECRET)
+  .<span class="c-fn">update</span>(voterId + sessionNonce)
+  .<span class="c-fn">digest</span>(<span class="c-str">'hex'</span>);
+
+<span class="c-comment">// JWT signed — expires in 10 minutes</span>
+<span class="c-keyword">const</span> jwt = <span class="c-fn">sign</span>({ voterToken }, JWT_SECRET, {
+  expiresIn: <span class="c-str">'10m'</span>
+});</pre>
+    <div class="key-fact"><strong>Double-Binding:</strong> The JWT binds the voterToken to the session IP + device fingerprint. If either changes mid-session, the token is invalidated.</div>`,
+  },
+  modal1: {
+    title: 'Client-Side E2EE Encryption',
+    tag: 'Node 02 — Cryptographic Layer',
+    body: `<p>Before the ballot ever leaves the voter's browser, it undergoes a hybrid encryption scheme combining the speed of AES-256-GCM with the security of RSA-OAEP key encapsulation.</p>
+    <div class="key-fact"><strong>Zero Network Exposure:</strong> Even if a man-in-the-middle intercepts the HTTPS payload, they see only RSA-wrapped ciphertext. The plaintext vote choice never traverses the network.</div>
+    <pre><span class="c-comment">// client/utils/encrypt.ts</span>
+<span class="c-keyword">async function</span> <span class="c-fn">encryptBallot</span>(candidateId, pubKey) {
+  <span class="c-comment">// 1. Generate ephemeral AES key</span>
+  <span class="c-keyword">const</span> aesKey = <span class="c-keyword">await</span> crypto.subtle
+    .<span class="c-fn">generateKey</span>(
+      { name: <span class="c-str">'AES-GCM'</span>, length: 256 },
+      <span class="c-keyword">true</span>, [<span class="c-str">'encrypt'</span>]
+    );
+
+  <span class="c-comment">// 2. Encrypt vote with AES</span>
+  <span class="c-keyword">const</span> iv = crypto.<span class="c-fn">getRandomValues</span>(<span class="c-keyword">new</span> <span class="c-cls">Uint8Array</span>(12));
+  <span class="c-keyword">const</span> ciphertext = <span class="c-keyword">await</span> crypto.subtle
+    .<span class="c-fn">encrypt</span>({ name: <span class="c-str">'AES-GCM'</span>, iv }, aesKey, 
+      <span class="c-fn">encode</span>(candidateId));
+
+  <span class="c-comment">// 3. Wrap AES key with election RSA public key</span>
+  <span class="c-keyword">const</span> wrappedKey = <span class="c-keyword">await</span> crypto.subtle
+    .<span class="c-fn">wrapKey</span>(<span class="c-str">'raw'</span>, aesKey, pubKey, <span class="c-str">'RSA-OAEP'</span>);
+
+  <span class="c-keyword">return</span> { ciphertext, wrappedKey, iv };
+}</pre>
+    <p>The RSA private key (used to unwrap and tally) is held in a Hardware Security Module (HSM) and is only accessible after the election officially closes — providing temporal secrecy.</p>`,
+  },
+  modal2: {
+    title: 'ZKP & Fraud Engine Gate',
+    tag: 'Node 03 — Validation Layer',
+    body: `<p>The validation gate runs two independent checks in parallel before forwarding the transaction to the ledger. Either check failing silently drops the packet.</p>
+    <div class="key-fact"><strong>Zero-Knowledge Proof:</strong> Using a Sigma Protocol, the voter proves they satisfy eligibility criteria (age ≥ 18, registered in constituency, has not voted) without revealing <em>which</em> voter they are to the blockchain.</div>
+    <pre><span class="c-comment">// ZKP Verification — chaincode/zkp-verifier.js</span>
+<span class="c-keyword">async function</span> <span class="c-fn">verifyEligibility</span>(proof, publicInput) {
+  <span class="c-comment">// Verify: voter ∈ constituency_merkle_tree</span>
+  <span class="c-comment">// WITHOUT revealing which leaf (which voter)</span>
+  <span class="c-keyword">const</span> valid = <span class="c-keyword">await</span> groth16
+    .<span class="c-fn">verify</span>(verificationKey, publicInput, proof);
+  
+  <span class="c-keyword">if</span> (!valid) <span class="c-keyword">throw new</span> <span class="c-cls">Error</span>(<span class="c-str">'ZKP_INVALID'</span>);
+  <span class="c-keyword">return</span> { eligible: <span class="c-keyword">true</span>, identity: <span class="c-str">'REDACTED'</span> };
+}</pre>
+    <p>The <strong>Fraud Engine</strong> cross-references behavioral signals stored in PostgreSQL: device fingerprint, IP geolocation cluster, typing cadence, and time-between-requests. Anomalies trigger a soft block and human review flag.</p>
+    <pre><span class="c-comment">// FraudMonitor.jsx — behavioral signals</span>
+<span class="c-keyword">const</span> signals = {
+  deviceFingerprint: <span class="c-fn">getFingerprint</span>(),
+  ipCluster: <span class="c-fn">geoCluster</span>(req.ip),
+  attemptCount: <span class="c-keyword">await</span> redis.<span class="c-fn">incr</span>(voterId),
+  timeDelta: Date.now() - lastAttempt
+};</pre>`,
+  },
+  modal3: {
+    title: 'Hyperledger Fabric Transaction',
+    tag: 'Node 04 — Immutable Ledger',
+    body: `<p>The validated transaction enters the Hyperledger Fabric network. LokSetu runs a 4-peer Raft ordering service. All 4 peers must endorse the transaction before it is committed — providing Byzantine Fault Tolerance.</p>
+    <div class="key-fact"><strong>Consensus Mechanism (PBFT/Raft):</strong> Even if one peer is compromised or offline, the remaining 3 ensure the chain continues. A majority (3/4) must agree on the order and validity of transactions.</div>
+    <pre><span class="c-comment">// The transaction object written to the ledger</span>
+{
+  "txId": <span class="c-str">"a3f9c2d1e7b4..."</span>,
+  "blockNum": <span class="c-fn">1883</span>,
+  "timestamp": <span class="c-str">"2025-01-15T14:23:07Z"</span>,
+  "voterToken": <span class="c-str">"HMAC_HASH_ONLY"</span>,
+  <span class="c-comment">// vote is still encrypted at rest</span>
+  "encryptedBallot": <span class="c-str">"RSA_AES_CIPHERTEXT"</span>,
+  "constituencyId": <span class="c-str">"RAIPUR_NORTH_07"</span>,
+  "prevHash": <span class="c-str">"b2c89e4f..."</span>,
+  "blockHash": <span class="c-str">"a3f9c2d1..."</span>,
+  "endorsements": [
+    { "peer": <span class="c-str">"peer0.org1"</span>, "sig": <span class="c-str">"..."</span> },
+    { "peer": <span class="c-str">"peer1.org1"</span>, "sig": <span class="c-str">"..."</span> },
+    { "peer": <span class="c-str">"peer0.org2"</span>, "sig": <span class="c-str">"..."</span> }
+  ]
+}</pre>
+    <p>The <code>prevHash</code> field is the cryptographic "glue" of the chain. Altering any historical block changes its hash, which cascades through every subsequent block's <code>prevHash</code> — making tampering immediately detectable by any node.</p>`,
+  },
+  modal4: {
+    title: 'Decentralized Audit & Tally',
+    tag: 'Node 05 — Transparency Layer',
+    body: `<p>Once the election closes, the HSM releases the RSA private key. The tally process decrypts all ballots and computes the final count. This entire process is verifiable by any independent auditor with access to the ledger.</p>
+    <div class="key-fact"><strong>Mathematical Verifiability:</strong> The tally is computed as a sum of decrypted, individually verifiable ballots. Any auditor can re-run the computation against the public ledger and arrive at identical results.</div>
+    <pre><span class="c-comment">// result.ts — tally query against CouchDB state DB</span>
+<span class="c-keyword">async function</span> <span class="c-fn">computeTally</span>(electionId) {
+  <span class="c-keyword">const</span> iterator = <span class="c-keyword">await</span> ctx.stub
+    .<span class="c-fn">getQueryResult</span>(JSON.<span class="c-fn">stringify</span>({
+      selector: { electionId, docType: <span class="c-str">'ballot'</span> }
+    }));
+
+  <span class="c-keyword">const</span> counts = {};
+  <span class="c-keyword">for await</span> (<span class="c-keyword">const</span> res <span class="c-keyword">of</span> iterator) {
+    <span class="c-keyword">const</span> ballot = <span class="c-fn">decrypt</span>(res.value, hsmPrivKey);
+    counts[ballot.candidateId] = 
+      (counts[ballot.candidateId] || 0) + 1;
+  }
+  <span class="c-keyword">return</span> counts;
+}</pre>
+    <p>Kafka streams the running tally to the Admin Dashboard in real-time via WebSocket — updating the live bar chart without polling the blockchain repeatedly, handling millions of votes without performance degradation.</p>
+    <div class="key-fact"><strong>Anonymity Preservation:</strong> The tally reveals totals per candidate, never which voter chose which candidate. The ZKP proofs stored on-chain confirm the arithmetic is correct without revealing the mapping.</div>`,
+  },
+};
+
+// ══════════════════════════════════════════════════
+//  HEXAGONAL BACKGROUND CANVAS
+// ══════════════════════════════════════════════════
+function initHexCanvas() {
+  const canvas = document.getElementById('hexCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, hexes = [];
+
+  const resize = () => {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    buildHexes();
+  };
+
+  function buildHexes() {
+    hexes = [];
+    const size = 36, dx = size * 1.732, dy = size * 1.5;
+    for (let row = -1; row < H / dy + 2; row++) {
+      for (let col = -1; col < W / dx + 2; col++) {
+        const x = col * dx + (row % 2 === 0 ? 0 : dx / 2);
+        const y = row * dy;
+        hexes.push({ x, y, phase: Math.random() * Math.PI * 2, speed: 0.003 + Math.random() * 0.004 });
+      }
+    }
+  }
+
+  function drawHex(x, y, size, alpha) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 3) * i - Math.PI / 6;
+      const px = x + size * Math.cos(a), py = y + size * Math.sin(a);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = `rgba(245,123,31,${alpha})`;
+    ctx.lineWidth = .8;
+    ctx.stroke();
+  }
+
+  let t = 0;
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    t += 0.01;
+    hexes.forEach(h => {
+      const alpha = 0.04 + 0.06 * (0.5 + 0.5 * Math.sin(t * h.speed * 100 + h.phase));
+      drawHex(h.x, h.y, 34, alpha);
+    });
+    requestAnimationFrame(animate);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  animate();
+}
+
+// ══════════════════════════════════════════════════
+//  VOTE COUNTER ANIMATION
+// ══════════════════════════════════════════════════
+function animateCount(el, target, duration = 800) {
+  const start = parseInt(el.textContent) || 0;
+  const startTime = performance.now();
+  const step = (now) => {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const val = Math.round(start + (target - start) * progress);
+    el.textContent = val;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ══════════════════════════════════════════════════
+//  PIPELINE NODE POSITIONS
+// ══════════════════════════════════════════════════
+function getNodeCenters() {
+  const track = document.getElementById('pipelineTrack');
+  const trackRect = track.getBoundingClientRect();
+  const centers = [];
+  for (let i = 0; i < 5; i++) {
+    const card = document.getElementById(`node${i}`);
+    if (card) {
+      const r = card.getBoundingClientRect();
+      centers.push({
+        x: r.left - trackRect.left + r.width / 2,
+        y: r.top - trackRect.top + r.height / 2,
+      });
+    }
+  }
+  return centers;
+}
+
+// ══════════════════════════════════════════════════
+//  MOVE PACKET TO NODE
+// ══════════════════════════════════════════════════
+function movePacketTo(nodeIdx) {
+  const track = document.getElementById('pipelineTrack');
+  const packet = document.getElementById('votePacket');
+  const nodeCard = document.getElementById(`node${nodeIdx}`);
+  if (!track || !packet || !nodeCard) return;
+
+  const trackRect = track.getBoundingClientRect();
+  const cardRect = nodeCard.getBoundingClientRect();
+  const x = cardRect.left - trackRect.left + cardRect.width / 2;
+  const y = cardRect.top - trackRect.top + cardRect.height / 2 - 80;
+
+  packet.style.left = x + 'px';
+  packet.style.top = y + 'px';
+}
+
+// ══════════════════════════════════════════════════
+//  NODE ACTIVATION
+// ══════════════════════════════════════════════════
+const nodeLabels = ['Scanning…', 'Encrypting…', 'Validating…', 'Committing…', 'Tallying…'];
+const nodeComplete = ['Verified ✓', 'Encrypted ✓', 'Cleared ✓', 'On Ledger ✓', 'Tallied ✓'];
+
+function activateNode(idx) {
+  // Deactivate all
+  for (let i = 0; i < 5; i++) {
+    const card = document.getElementById(`node${i}`);
+    const status = document.getElementById(`status${i}`);
+    const conn = document.getElementById(`conn${i}`);
+    if (card) card.classList.remove('active');
+    if (status) { status.classList.remove('active', 'done', 'error'); }
+    if (conn && i < 4) conn.classList.remove('active');
+  }
+
+  // Activate current node
+  const card = document.getElementById(`node${idx}`);
+  const status = document.getElementById(`status${idx}`);
+  if (card) card.classList.add('active');
+  if (status) { status.classList.add('active'); status.textContent = nodeLabels[idx]; }
+
+  // Mark previous nodes as completed
+  for (let i = 0; i < idx; i++) {
+    const c = document.getElementById(`node${i}`);
+    const s = document.getElementById(`status${i}`);
+    const conn = document.getElementById(`conn${i}`);
+    if (c) { c.classList.remove('active'); c.classList.add('completed'); }
+    if (s) { s.classList.remove('active'); s.classList.add('done'); s.textContent = nodeComplete[i]; }
+    if (conn) conn.classList.add('active');
+  }
+
+  // Activate connector before current
+  if (idx > 0) {
+    const conn = document.getElementById(`conn${idx - 1}`);
+    if (conn) conn.classList.add('active');
+  }
+
+  systemState.activeNode = idx;
+  movePacketTo(idx);
+
+  // Update scrubber
+  document.getElementById('scrubber').value = idx;
+}
+
+function completeNode(idx) {
+  const card = document.getElementById(`node${idx}`);
+  const status = document.getElementById(`status${idx}`);
+  if (card) { card.classList.remove('active'); card.classList.add('completed'); }
+  if (status) { status.classList.remove('active'); status.classList.add('done'); status.textContent = nodeComplete[idx]; }
+}
+
+// ══════════════════════════════════════════════════
+//  JOURNEY ANIMATION
+// ══════════════════════════════════════════════════
+async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function startJourneyAnimation() {
+  if (systemState.isAnimating) return;
+  systemState.isAnimating = true;
+
+  const btn = document.getElementById('startJourney');
+  btn.textContent = '⏳ Journey in progress…';
+  btn.disabled = true;
+
+  // Show packet
+  const packet = document.getElementById('votePacket');
+  packet.style.opacity = '1';
+
+  // Update new block votes counter periodically
+  const voteIncInterval = setInterval(() => {
+    systemState.votesCommitted++;
+    animateCount(document.getElementById('voteCounter'), systemState.votesCommitted);
+    const newBlockEl = document.getElementById('newBlockVotes');
+    if (newBlockEl) newBlockEl.textContent = systemState.votesCommitted + ' votes';
+    const newBlock = document.getElementById('newBlock');
+    if (newBlock) {
+      newBlock.querySelector('.cb-hash').innerHTML = `a3f${systemState.votesCommitted.toString(16)}<span>c2d${systemState.votesCommitted}</span>`;
+    }
+  }, 4000);
+
+  for (let i = 0; i < 5; i++) {
+    activateNode(i);
+    showToast(`Node ${i + 1}: ${nodeLabels[i]}`);
+    await sleep(1800);
+    completeNode(i);
+    await sleep(400);
+  }
+
+  clearInterval(voteIncInterval);
+
+  // Final commit
+  systemState.votesCommitted++;
+  animateCount(document.getElementById('voteCounter'), systemState.votesCommitted);
+  const newBlockEl = document.getElementById('newBlockVotes');
+  if (newBlockEl) newBlockEl.textContent = systemState.votesCommitted + ' votes';
+
+  // Update block status
+  const newBlock = document.getElementById('newBlock');
+  if (newBlock) {
+    newBlock.querySelector('.pending-status').textContent = '✓ Committed';
+    newBlock.querySelector('.pending-status').classList.remove('pending-status');
+    newBlock.querySelector('.cb-status').style.color = 'var(--green)';
+    newBlock.querySelector('.cb-status').style.background = 'var(--green-dim)';
+    newBlock.classList.remove('active');
+    newBlock.classList.add('confirmed');
+  }
+
+  showToast('🎉 Vote committed to immutable ledger!');
+
+  btn.innerHTML = '<i class="fas fa-play-circle"></i> Restart Journey';
+  btn.disabled = false;
+  systemState.isAnimating = false;
+}
+
+// ══════════════════════════════════════════════════
+//  HACK SIMULATION
+// ══════════════════════════════════════════════════
+function simulateHack() {
+  systemState.isHacked = true;
+  const widget = document.getElementById('integrityWidget');
+  widget.classList.add('hacked');
+
+  // Ledger health drops
+  const fill = document.getElementById('ledgerFill');
+  const pct = document.getElementById('ledgerPct');
+  fill.style.width = '23%';
+  fill.classList.add('danger');
+  pct.textContent = '23%';
+  pct.style.color = '#e74c3c';
+
+  // Nodes die
+  const dots = document.querySelectorAll('.nd');
+  dots[2].classList.remove('active');
+  dots[2].classList.add('dead');
+  dots[3].classList.remove('active');
+  dots[3].classList.add('dead');
+  document.getElementById('nodesVal').textContent = '2/4';
+  document.getElementById('nodesVal').style.color = '#e74c3c';
+
+  // Hack a block
+  const blocks = document.querySelectorAll('.chain-block.confirmed');
+  if (blocks.length > 1) {
+    const target = blocks[1];
+    target.classList.add('hacked');
+    target.querySelector('.cb-hash').innerHTML = `<span style="color:#e74c3c">TAMPERED!</span>`;
+    target.querySelector('.cb-status').textContent = '⚠ INVALID';
+    target.querySelector('.cb-status').style.color = '#e74c3c';
+    target.querySelector('.cb-status').style.background = 'rgba(231,76,60,.1)';
+    target.querySelector('.cb-num').textContent = '#1881 ⚠';
+  }
+
+  // All subsequent blocks break
+  const allBlocks = document.querySelectorAll('.chain-block');
+  allBlocks.forEach((b, i) => {
+    if (i > 1) {
+      setTimeout(() => {
+        b.classList.add('hacked');
+        const statusEl = b.querySelector('.cb-status, .pending-status');
+        if (statusEl) { statusEl.textContent = '⚠ HASH MISMATCH'; statusEl.style.color = '#e74c3c'; statusEl.style.background = 'rgba(231,76,60,.1)'; }
+      }, i * 300);
+    }
+  });
+
+  // Header badges update
+  document.querySelectorAll('.badge-green').forEach(b => {
+    b.style.color = '#e74c3c'; b.style.borderColor = '#e74c3c'; b.style.background = 'rgba(231,76,60,.1)';
+    b.innerHTML = '<i class="fas fa-circle"></i> Ledger Compromised';
+  });
+
+  showToast('⚠ Tamper attempt detected! Chain integrity broken.', '#e74c3c');
+
+  document.getElementById('hackBtn').classList.add('hidden');
+  document.getElementById('restoreBtn').classList.remove('hidden');
+}
+
+function restoreChain() {
+  systemState.isHacked = false;
+  location.reload(); // Simple restore — reload page state
+}
+
+// ══════════════════════════════════════════════════
+//  DOUBLE VOTE SIMULATION
+// ══════════════════════════════════════════════════
+const terminalLines = [
+  { cls: 'term-info', text: '> Incoming TX from voter 0xA3F9…' },
+  { cls: 'term-info', text: '> Checking VoterRegistry on ledger…' },
+  { cls: 'term-ok',   text: '✓ getState("0xA3F9") → "VOTED"' },
+  { cls: 'term-err',  text: '✗ ERROR: VOTER_ALREADY_VOTED' },
+  { cls: 'term-err',  text: '  Transaction rejected. Block not appended.' },
+  { cls: 'term-info', text: '  Fraud flag raised → PostgreSQL audit log.' },
+];
+
+async function simulateDoubleVote() {
+  const output = document.getElementById('termOutput');
+  output.innerHTML = '';
+  systemState.doubleVoteAttempts++;
+  animateCount(document.getElementById('doubleVoteCounter'), systemState.doubleVoteAttempts);
+
+  for (const line of terminalLines) {
+    await sleep(500);
+    const span = document.createElement('span');
+    span.className = `term-line ${line.cls}`;
+    span.textContent = line.text;
+    output.appendChild(span);
+    output.scrollTop = output.scrollHeight;
+  }
+  showToast('Double-vote attempt blocked by chaincode!');
+}
+
+// ══════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════
+function openModal(id) {
+  const data = modalData[id];
+  if (!data) return;
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `
+    <h2>${data.title}</h2>
+    <span class="mc-tag">${data.tag}</span>
+    ${data.body}
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+let toastTimeout;
+function showToast(msg, bg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  if (bg) toast.style.background = bg;
+  else toast.style.background = 'var(--text)';
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════
+//  SCRUBBER
+// ══════════════════════════════════════════════════
+function initScrubber() {
+  const scrubber = document.getElementById('scrubber');
+  scrubber.addEventListener('input', () => {
+    const idx = parseInt(scrubber.value);
+    activateNode(idx);
+  });
+}
+
+// ══════════════════════════════════════════════════
+//  CLICK-TO-JUMP NODES
+// ══════════════════════════════════════════════════
+function initNodeClicks() {
+  for (let i = 0; i < 5; i++) {
+    const card = document.getElementById(`node${i}`);
+    if (card) {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-dive')) return; // handled separately
+        activateNode(i);
+        showToast(`Jumped to Node ${i + 1}`);
+      });
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  DV STEP HIGHLIGHT
+// ══════════════════════════════════════════════════
+function animateDVSteps() {
+  const steps = document.querySelectorAll('.dv-step');
+  let idx = 0;
+  steps.forEach(s => s.classList.remove('active-step'));
+  const interval = setInterval(() => {
+    steps.forEach(s => s.classList.remove('active-step'));
+    if (idx < steps.length) {
+      steps[idx].classList.add('active-step');
+      idx++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 600);
+}
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+
+  initHexCanvas();
+  initScrubber();
+  initNodeClicks();
+
+  // Packet initial position
+  const packet = document.getElementById('votePacket');
+  packet.style.opacity = '0';
+  packet.style.left = '0px';
+  packet.style.top = '50%';
+
+  // Start journey button
+  document.getElementById('startJourney').addEventListener('click', () => {
+    // Scroll to pipeline
+    document.getElementById('pipeline').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(startJourneyAnimation, 600);
+  });
+
+  // Deep dive buttons
+  document.querySelectorAll('.btn-dive').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openModal(btn.dataset.modal);
+    });
+  });
+
+  // Modal close
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Hack & restore
+  document.getElementById('hackBtn').addEventListener('click', simulateHack);
+  document.getElementById('restoreBtn').addEventListener('click', restoreChain);
+
+  // Double vote simulation
+  document.getElementById('simulateDV').addEventListener('click', () => {
+    simulateDoubleVote();
+    animateDVSteps();
+  });
+
+  // Auto-increment vote counter slowly to simulate live election
+  setInterval(() => {
+    if (!systemState.isHacked && Math.random() > 0.4) {
+      systemState.votesCommitted++;
+      animateCount(document.getElementById('voteCounter'), systemState.votesCommitted);
+      const el = document.getElementById('newBlockVotes');
+      if (el) el.textContent = systemState.votesCommitted + ' votes';
+    }
+  }, 3500);
+
+  // Initial activate first node after brief delay
+  setTimeout(() => {
+    activateNode(0);
+  }, 800);
+});
+
+</script>
+</body>
+</html>

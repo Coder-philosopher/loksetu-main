@@ -33,6 +33,9 @@ LokSetu is designed to modernize the electoral process by ensuring:
 • Real-time fraud monitoring
 • Transparent result auditing
 
+**[NEW] 🔍 Interactive Blockchain Visualizer:**  
+Explore the [Journey of a Vote](LokSetu-main/VISUALIZER/index.html) to understand how our system encrypts, validates, and records votes on the Hyperledger Ledger.
+
 The platform integrates **Hyperledger Fabric, AI-based anomaly detection, and biometric authentication** to build a trustworthy digital voting ecosystem.
 
 ---

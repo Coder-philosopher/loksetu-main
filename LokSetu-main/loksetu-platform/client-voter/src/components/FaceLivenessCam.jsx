@@ -1,109 +1,222 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import * as faceapi from 'face-api.js';
-import { Eye, CheckCircle, Loader2, RefreshCw } from 'lucide-react';
+import { Eye, CheckCircle, Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 
-// --- TUNED CONSTANTS (Based on your logs) ---
-const BLINK_THRESHOLD = 0.26;  // Trigger blink when EAR drops below this
-const EYE_OPEN_THRESHOLD = 0.29; // Verify blink when EAR goes back above this
+// ─── Tuned constants ───────────────────────────────────────
+const BLINK_THRESHOLD = 0.26;
+const EYE_OPEN_THRESHOLD = 0.29;
 
+// ─── EAR helper ───────────────────────────────────────────
+const dist = (p1, p2) => Math.hypot(p1.x - p2.x, p1.y - p2.y);
+const getEAR = (eye) => {
+  const A = dist(eye[1], eye[5]);
+  const B = dist(eye[2], eye[4]);
+  const C = dist(eye[0], eye[3]);
+  return (A + B) / (2.0 * C);
+};
+
+// ─── Scanning line ────────────────────────────────────────
+const ScanLine = ({ active }) =>
+  active ? (
+    <div className="absolute inset-x-0 h-[2px] z-30 pointer-events-none overflow-hidden"
+      style={{ animation: 'scanDown 2.5s linear infinite', top: 0 }}>
+      <div className="w-full h-full bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+    </div>
+  ) : null;
+
+// ─── Face guide oval ──────────────────────────────────────
+const FaceOval = ({ status }) => {
+  const strokeColor =
+    status === 'verified' ? '#10b981'
+    : status === 'blinking' ? '#3b82f6'
+    : status === 'idle' ? 'rgba(245,158,11,0.5)'
+    : 'rgba(148,163,184,0.3)';
+
+  const glowColor =
+    status === 'verified' ? 'rgba(16,185,129,0.3)'
+    : status === 'blinking' ? 'rgba(59,130,246,0.3)'
+    : 'transparent';
+
+  return (
+    <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+          <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+      <ellipse cx="50" cy="48" rx="26" ry="34"
+        fill="none"
+        stroke={strokeColor}
+        strokeWidth="0.8"
+        filter={status !== 'idle' && status !== 'loading' ? 'url(#glow)' : ''}
+        style={{ transition: 'stroke 0.4s ease' }}
+      />
+      {/* Darken outside oval - lighter for light theme */}
+      <mask id="ovalMask">
+        <rect width="100" height="100" fill="white" />
+        <ellipse cx="50" cy="48" rx="26" ry="34" fill="black" />
+      </mask>
+      <rect width="100" height="100" fill={`rgba(248,250,252,0.65)`} mask="url(#ovalMask)" />
+    </svg>
+  );
+};
+
+// ─── Status overlay content ───────────────────────────────
+const StatusOverlay = ({ status, t }) => {
+  if (status === 'loading') return (
+    <div className="absolute inset-0 z-40 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+      <div className="w-12 h-12 rounded-full border border-amber-300 bg-amber-50 flex items-center justify-center">
+        <Loader2 size={22} className="text-amber-500 animate-spin" />
+      </div>
+      <p className="font-['JetBrains_Mono',monospace] text-[10px] font-bold text-amber-600 uppercase tracking-[2px]">
+        Loading AI Models
+      </p>
+      <div className="flex gap-1">
+        {[0,1,2].map(i => (
+          <div key={i} className="w-1 h-1 rounded-full bg-amber-400 animate-pulse"
+            style={{ animationDelay: `${i * 0.2}s` }} />
+        ))}
+      </div>
+    </div>
+  );
+
+  if (status === 'verifying') return (
+    <div className="absolute inset-0 z-40 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+      <Loader2 size={36} className="text-amber-500 animate-spin" />
+      <div className="text-center">
+        <p className="text-sm font-bold text-slate-800">Verifying Identity</p>
+        <p className="font-['JetBrains_Mono',monospace] text-[9px] text-slate-500 uppercase tracking-[2px] mt-0.5">
+          Matching biometric data
+        </p>
+      </div>
+    </div>
+  );
+
+  if (status === 'verified') return (
+    <div className="absolute inset-0 z-40 bg-white/95 flex flex-col items-center justify-center gap-3">
+      <div className="relative">
+        <div className="absolute inset-0 rounded-full bg-emerald-400/20 animate-ping" style={{ animationDuration: '1.2s' }} />
+        <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center relative">
+          <CheckCircle size={28} className="text-emerald-500" />
+        </div>
+      </div>
+      <div className="text-center">
+        <p className="font-bold text-sm text-slate-800">Liveness Verified</p>
+        <p className="font-['JetBrains_Mono',monospace] text-[9px] text-emerald-600 uppercase tracking-[2px] mt-0.5">
+          Processing capture…
+        </p>
+      </div>
+    </div>
+  );
+
+  return null;
+};
+
+// ─── Bottom instruction bar ───────────────────────────────
+const InstructionBar = ({ status }) => {
+  const configs = {
+    idle: {
+      icon: <Eye size={13} className="text-amber-500 flex-shrink-0" />,
+      text: 'Look at camera · Blink naturally to verify',
+      bg: 'bg-white/90 border-slate-200 shadow-sm',
+      textColor: 'text-slate-700',
+    },
+    blinking: {
+      icon: <RefreshCw size={13} className="text-blue-500 animate-spin flex-shrink-0" />,
+      text: 'Blink detected · Open your eyes',
+      bg: 'bg-blue-50 border-blue-200',
+      textColor: 'text-blue-700',
+    },
+  };
+  const cfg = configs[status];
+  if (!cfg) return null;
+  return (
+    <div className="absolute bottom-3 inset-x-3 z-30">
+      <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border backdrop-blur-sm ${cfg.bg}`}>
+        {cfg.icon}
+        <span className={`text-[10px] font-semibold ${cfg.textColor}`}>{cfg.text}</span>
+      </div>
+    </div>
+  );
+};
+
+// ─── EAR debug pill ───────────────────────────────────────
+const DebugPill = ({ ear, status }) => (
+  <div className="absolute top-3 left-3 z-30 flex items-center gap-1.5 bg-white/90 border border-slate-200 rounded-full px-2.5 py-1 backdrop-blur-sm shadow-sm">
+    <div className={`w-1.5 h-1.5 rounded-full ${
+      status === 'blinking' ? 'bg-blue-500' : status === 'verified' ? 'bg-emerald-500' : 'bg-amber-500'
+    }`} />
+    <span className="font-['JetBrains_Mono',monospace] text-[9px] text-slate-600">
+      EAR {ear}
+    </span>
+  </div>
+);
+
+// ─── Main component ───────────────────────────────────────
 const FaceLivenessCam = ({ onCapture, isProcessing }) => {
   const webcamRef = useRef(null);
   const timerRef = useRef(null);
-  
-  const [status, setStatus] = useState("loading"); // loading, idle, blinking, verified
+  const [status, setStatus] = useState('loading');
   const [modelLoaded, setModelLoaded] = useState(false);
-  const [debugEAR, setDebugEAR] = useState(0); 
+  const [debugEAR, setDebugEAR] = useState('—');
 
   useEffect(() => {
-    const loadModels = async () => {
+    (async () => {
       try {
-        const MODEL_URL = '/models'; 
         await Promise.all([
-          faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
+          faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+          faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
         ]);
         setModelLoaded(true);
-        setStatus("idle");
+        setStatus('idle');
       } catch (err) {
-        console.error("Model Load Error:", err);
+        console.error('Model load error:', err);
+        setStatus('error');
       }
-    };
-    loadModels();
+    })();
   }, []);
-
-  const getEAR = (eye) => {
-    const dist = (p1, p2) => Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-    const A = dist(eye[1], eye[5]);
-    const B = dist(eye[2], eye[4]);
-    const C = dist(eye[0], eye[3]);
-    return (A + B) / (2.0 * C);
-  };
 
   const captureScreenshot = useCallback((attempt = 0) => {
     if (webcamRef.current) {
-      // Try the built-in getScreenshot first
-      const image = webcamRef.current.getScreenshot();
-      if (image) {
-        onCapture(image);
-        return;
-      }
-      // Fallback: capture directly from the video element via Canvas API
+      const img = webcamRef.current.getScreenshot();
+      if (img) { onCapture(img); return; }
       const video = webcamRef.current.video;
-      if (video && video.readyState === 4 && video.videoWidth > 0) {
+      if (video?.readyState === 4 && video.videoWidth > 0) {
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         canvas.getContext('2d').drawImage(video, 0, 0);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-        if (dataUrl && dataUrl !== 'data:,') {
-          onCapture(dataUrl);
-          return;
-        }
+        if (dataUrl && dataUrl !== 'data:,') { onCapture(dataUrl); return; }
       }
     }
-    if (attempt < 6) {
-      setTimeout(() => captureScreenshot(attempt + 1), 400);
-      return;
-    }
-    console.warn('Screenshot capture failed after retries — webcam ref not ready');
+    if (attempt < 6) { setTimeout(() => captureScreenshot(attempt + 1), 400); return; }
     onCapture(null);
   }, [onCapture]);
 
   const checkLiveness = useCallback(async () => {
-    if (!webcamRef.current || !webcamRef.current.video) return;
-    if (status === 'verified') return;
-
+    if (!webcamRef.current?.video || status === 'verified') return;
     const video = webcamRef.current.video;
     if (video.readyState !== 4) return;
-
     try {
-        const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 });
-        const detection = await faceapi.detectSingleFace(video, options).withFaceLandmarks();
-
-        if (detection) {
-            const landmarks = detection.landmarks;
-            const leftEAR = getEAR(landmarks.getLeftEye());
-            const rightEAR = getEAR(landmarks.getRightEye());
-            const avgEAR = (leftEAR + rightEAR) / 2;
-
-            setDebugEAR(avgEAR.toFixed(3));
-            console.log(`EAR: ${avgEAR.toFixed(3)} | Status: ${status}`);
-
-            // 1. Detect Blink (Eyes Closed)
-            if (avgEAR < BLINK_THRESHOLD) {
-                if (status !== "blinking") setStatus("blinking");
-            } 
-            // 2. Detect Open (Blink Finished)
-            else if (status === "blinking" && avgEAR > EYE_OPEN_THRESHOLD) {
-                setStatus("verified");
-                clearInterval(timerRef.current);
-                setTimeout(captureScreenshot, 500);
-            }
+      const det = await faceapi
+        .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
+        .withFaceLandmarks();
+      if (det) {
+        const lm = det.landmarks;
+        const avg = (getEAR(lm.getLeftEye()) + getEAR(lm.getRightEye())) / 2;
+        setDebugEAR(avg.toFixed(3));
+        if (avg < BLINK_THRESHOLD) {
+          if (status !== 'blinking') setStatus('blinking');
+        } else if (status === 'blinking' && avg > EYE_OPEN_THRESHOLD) {
+          setStatus('verified');
+          clearInterval(timerRef.current);
+          setTimeout(captureScreenshot, 500);
         }
-    } catch (err) {
-        console.error("AI Error:", err);
-    }
+      }
+    } catch (e) { console.error('AI error:', e); }
   }, [status, captureScreenshot]);
 
   useEffect(() => {
@@ -113,53 +226,54 @@ const FaceLivenessCam = ({ onCapture, isProcessing }) => {
     return () => clearInterval(timerRef.current);
   }, [modelLoaded, status, checkLiveness]);
 
+  const displayStatus = isProcessing && status !== 'verified' ? 'verifying' : status;
+
   return (
-    <div className="relative w-full h-full overflow-hidden border-4 border-slate-700 bg-black shadow-2xl">
-      <Webcam
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        className="w-full h-full object-cover"
-        videoConstraints={{ width: 480, height: 480, facingMode: "user" }}
-        style={{ objectPosition: 'center center', transform: 'scaleX(-1)', display: 'block' }}
-      />
-      
-      {/* DEBUG OVERLAY */}
-      <div className="absolute top-4 left-0 right-0 text-center pointer-events-none z-20">
-        <span className="bg-black/60 text-white text-[10px] px-2 py-1 rounded font-mono">
-           EAR: {debugEAR} {status === 'blinking' ? '(Closed)' : '(Open)'}
-        </span>
+    <>
+      <style>{`
+        @keyframes scanDown {
+          0% { top: 0%; }
+          100% { top: 100%; }
+        }
+      `}</style>
+
+      <div className="relative w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden">
+
+        {/* Webcam */}
+        <Webcam
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={{ width: 480, height: 480, facingMode: 'user' }}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ transform: 'scaleX(-1)', display: 'block' }}
+        />
+
+        {/* Face oval guide */}
+        {(displayStatus === 'idle' || displayStatus === 'blinking') && (
+          <FaceOval status={displayStatus} />
+        )}
+
+        {/* Scan line (idle) */}
+        <ScanLine active={displayStatus === 'idle'} />
+
+        {/* Debug EAR */}
+        {modelLoaded && displayStatus !== 'loading' && (
+          <DebugPill ear={debugEAR} status={displayStatus} />
+        )}
+
+        {/* Instruction bar */}
+        <InstructionBar status={displayStatus} />
+
+        {/* Status overlays */}
+        <StatusOverlay status={displayStatus} />
+
+        {/* Grid texture overlay - light theme */}
+        <div className="absolute inset-0 pointer-events-none z-[5]" style={{
+          backgroundImage: 'linear-gradient(rgba(0,0,0,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.02) 1px,transparent 1px)',
+          backgroundSize: '20px 20px',
+        }} />
       </div>
-
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-black/10">
-        {!modelLoaded && (
-            <div className="text-blue-400 flex flex-col items-center animate-pulse">
-                <Loader2 className="animate-spin mb-2" size={32} />
-                <span className="text-xs font-mono">Loading AI...</span>
-            </div>
-        )}
-
-        {modelLoaded && status === 'idle' && !isProcessing && (
-            <div className="text-yellow-400 flex flex-col items-center animate-in zoom-in bg-black/40 p-4 rounded-xl backdrop-blur-sm">
-                <Eye size={40} className="mb-2 animate-bounce" />
-                <span className="text-sm font-bold">Blink to Verify</span>
-            </div>
-        )}
-
-         {status === 'blinking' && (
-            <div className="text-blue-400 flex flex-col items-center animate-in zoom-in bg-black/40 p-4 rounded-xl backdrop-blur-sm">
-                <RefreshCw size={40} className="mb-2 animate-spin" />
-                <span className="text-sm font-bold">Hold... Open Eyes</span>
-            </div>
-        )}
-
-        {(status === 'verified' || isProcessing) && (
-          <div className="text-green-400 flex flex-col items-center animate-in fade-in bg-black/60 p-6">
-                <CheckCircle size={48} className="mb-2" />
-                <span className="text-sm font-bold">Verified</span>
-            </div>
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 
